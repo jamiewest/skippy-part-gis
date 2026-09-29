@@ -1,0 +1,151 @@
+{
+  "currentVersion": 11.5,
+  "cimVersion": "3.5.0",
+  "serviceDescription": "<div style='text-align:Left;'><div><div><p><span>In real estate, a lot or plot is a tract or parcel of land owned or meant to be owned by some owner(s). A lot is essentially considered a parcel of real property. Possible owner(s) of a lot can be one or more person(s) or another legal entity, such as a company/corporation, organization, government, or trust. Like most other types of real estate, lots owned by private parties are subject to a periodic real estate tax payable by the owners to local governments such as a county or municipality. These real estate taxes are based on the assessed value of the real property; additional taxes usually apply to transfer of ownership and property sales. Other fees by government are possible for improvements such as curbs and sidewalks or an impact fee for building a house on a vacant lot. \"Improved lot\" means any lot or parcel of land on which is located a dwelling house, occupied or unoccupied. There will be multiple parcels on top of each other for multistory buildings where each level is a separate parcel.</span></p><p><span>Subdivision is the act of dividing land into pieces that are easier to sell or otherwise develop, usually via a plat. The former single piece as a whole is then known in the United States as a subdivision. If it is used for housing it is typically known as a housing subdivision or housing development, although some developers tend to call these areas communities. Subdivisions may also be for the purpose of commercial or industrial development, and the results vary from retail shopping malls with independently owned out parcels, to industrial parks. There will be multiple subdivisions on top of each other for multistory buildings where each level may be considered a separate subdivision.</span></p><p><span>This data does not represent a legal record. The data was not created by engineering means and should not be used as such. The positional accuracy is +/- 5 feet.</span></p></div></div></div>",
+  "mapName": "Parcel",
+  "description": "In real estate, a lot or plot is a tract or parcel of land owned or meant to be owned by some owner(s). A lot is essentially considered a parcel of real property. Possible owner(s) of a lot can be one or more person(s) or another legal entity, such as a company/corporation, organization, government, or trust. Like most other types of real estate, lots owned by private parties are subject to a periodic real estate tax payable by the owners to local governments such as a county or municipality. These real estate taxes are based on the assessed value of the real property; additional taxes usually apply to transfer of ownership and property sales. Other fees by government are possible for improvements such as curbs and sidewalks or an impact fee for building a house on a vacant lot. \"Improved lot\" means any lot or parcel of land on which is located a dwelling house, occupied or unoccupied. There will be multiple parcels on top of each other for multistory buildings where each level is a separate parcel.Subdivision is the act of dividing land into pieces that are easier to sell or otherwise develop, usually via a plat. The former single piece as a whole is then known in the United States as a subdivision. If it is used for housing it is typically known as a housing subdivision or housing development, although some developers tend to call these areas communities. Subdivisions may also be for the purpose of commercial or industrial development, and the results vary from retail shopping malls with independently owned out parcels, to industrial parks. There will be multiple subdivisions on top of each other for multistory buildings where each level may be considered a separate subdivision.This data does not represent a legal record. The data was not created by engineering means and should not be used as such. The positional accuracy is +/- 5 feet.",
+  "copyrightText": "",
+  "supportsDynamicLayers": true,
+  "layers": [
+    {
+      "id": 0,
+      "name": "Subdivision",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 100000,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 1,
+      "name": "Parcel",
+      "parentLayerId": -1,
+      "defaultVisibility": true,
+      "subLayerIds": null,
+      "minScale": 19000,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    }
+  ],
+  "tables": [],
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857,
+    "xyTolerance": 0.001,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -20037700,
+    "falseY": -30241100,
+    "xyUnits": 148923141.92838538,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "singleFusedMapCache": false,
+  "initialExtent": {
+    "xmin": -13237922.140199887,
+    "ymin": 3440021.8420539517,
+    "xmax": -11774434.342327116,
+    "ymax": 4451731.367430918,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -20037700,
+      "falseY": -30241100,
+      "xyUnits": 148923141.92838538,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "fullExtent": {
+    "xmin": -12868378.25333266,
+    "ymin": 3727332.4622892714,
+    "xmax": -12143978.229194345,
+    "ymax": 4164420.7471955973,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -20037700,
+      "falseY": -30241100,
+      "xyUnits": 148923141.92838538,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "datesInUnknownTimezone": false,
+  "minScale": 100000,
+  "maxScale": 0,
+  "units": "esriMeters",
+  "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+  "documentInfo": {
+    "Title": "Parcels and Subdivisions",
+    "Author": "",
+    "Comments": "In real estate, a lot or plot is a tract or parcel of land owned or meant to be owned by some owner(s). A lot is essentially considered a parcel of real property. Possible owner(s) of a lot can be one or more person(s) or another legal entity, such as a company/corporation, organization, government, or trust. Like most other types of real estate, lots owned by private parties are subject to a periodic real estate tax payable by the owners to local governments such as a county or municipality. These real estate taxes are based on the assessed value of the real property; additional taxes usually apply to transfer of ownership and property sales. Other fees by government are possible for improvements such as curbs and sidewalks or an impact fee for building a house on a vacant lot. \"Improved lot\" means any lot or parcel of land on which is located a dwelling house, occupied or unoccupied. There will be multiple parcels on top of each other for multistory buildings where each level is a separate parcel.Subdivision is the act of dividing land into pieces that are easier to sell or otherwise develop, usually via a plat. The former single piece as a whole is then known in the United States as a subdivision. If it is used for housing it is typically known as a housing subdivision or housing development, although some developers tend to call these areas communities. Subdivisions may also be for the purpose of commercial or industrial development, and the results vary from retail shopping malls with independently owned out parcels, to industrial parks. There will be multiple subdivisions on top of each other for multistory buildings where each level may be considered a separate subdivision.This data does not represent a legal record. The data was not created by engineering means and should not be used as such. The positional accuracy is +/- 5 feet.",
+    "Subject": "Parcel and subdivision boundaries for properties in Maricopa County, Arizona.",
+    "Category": "",
+    "Version": "3.5.0",
+    "AntialiasingMode": "Fast",
+    "TextAntialiasingMode": "Force",
+    "Keywords": "parcel,subdivision,ownership,land,property,maricopa,maricopa county"
+  },
+  "supportsQueryDomains": true,
+  "capabilities": "Map,Query,Data",
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "exportTilesAllowed": false,
+  "referenceScale": 0.0,
+  "datumTransformations": [
+    {
+      "geoTransforms": [
+        {
+          "wkid": 108001,
+          "latestWkid": 1241,
+          "transformForward": true,
+          "name": "NAD_1927_To_NAD_1983_NADCON"
+        }
+      ]
+    },
+    {
+      "geoTransforms": [
+        {
+          "wkid": 108001,
+          "latestWkid": 1241,
+          "transformForward": false,
+          "name": "NAD_1927_To_NAD_1983_NADCON"
+        }
+      ]
+    }
+  ],
+  "supportsDatumTransformation": true,
+  "archivingInfo": {
+    "supportsHistoricMoment": false
+  },
+  "supportsClipping": true,
+  "supportsSpatialFilter": true,
+  "supportsTimeRelation": true,
+  "supportsQueryDataElements": true,
+  "mapUnits": {
+    "uwkid": 9001
+  },
+  "maxSelectionCount": 2000,
+  "maxRecordCount": 2000,
+  "maxImageHeight": 4096,
+  "maxImageWidth": 4096,
+  "supportedExtensions": "",
+  "resampling": false
+}

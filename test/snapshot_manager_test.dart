@@ -176,8 +176,7 @@ void main() {
         (
           objectId: firstId + index,
           longitude:
-              bounds.west +
-              (bounds.east - bounds.west) * (index + 0.5) / count,
+              bounds.west + (bounds.east - bounds.west) * (index + 0.5) / count,
           latitude:
               bounds.south +
               (bounds.north - bounds.south) * (index + 0.5) / count,
@@ -231,7 +230,7 @@ void main() {
   }) {
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
-    final store = LocalGisStore(database, countyId: 'los_angeles');
+    final store = LocalGisStore(database, countyId: 'ca_los_angeles');
     return (
       store: store,
       manager: SnapshotManager(
@@ -241,7 +240,7 @@ void main() {
             bounds: region,
             reportedCount: reportedCount,
           ),
-          county: CountySources.byId('los_angeles')!,
+          county: CountySources.byId('ca_los_angeles')!,
         ),
         store: store,
         tileFeatureLimit: 100000,
@@ -273,28 +272,22 @@ void main() {
   });
 
   test('pages a tile until the layer stops returning rows', () async {
-    featuresByLayer = {
-      'address': spread(region, 3),
-      'parcel': const [],
-    };
+    featuresByLayer = {'address': spread(region, 3), 'parcel': const []};
     final harness = createManager(tileFeatureLimit: 100, pageSize: 2);
 
     await harness.manager.download(region: region, onProgress: (_) {});
 
     // Three rows at two per page: offsets 0 and 2, then stop on the short page.
     check(
-      pageRequests.where((page) => page.layer == 'address').map(
-        (page) => page.offset,
-      ),
+      pageRequests
+          .where((page) => page.layer == 'address')
+          .map((page) => page.offset),
     ).deepEquals([0, 2]);
     check((await harness.store.status()).addressCount).equals(3);
   });
 
   test('subdivides an area too dense to page shallowly', () async {
-    featuresByLayer = {
-      'address': spread(region, 12),
-      'parcel': const [],
-    };
+    featuresByLayer = {'address': spread(region, 12), 'parcel': const []};
     final harness = createManager(tileFeatureLimit: 4, pageSize: 100);
 
     await harness.manager.download(region: region, onProgress: (_) {});
@@ -355,11 +348,14 @@ void main() {
   test('counts a shared address and parcel layer only once', () async {
     // A statewide county stores one row as both an address point and a parcel,
     // so counting it twice would halve the area a snapshot appears to accept.
-    final losAngeles = CountySources.byId('los_angeles')!;
+    final losAngeles = CountySources.byId('ca_los_angeles')!;
 
-    check(losAngeles.addressQuery).equals(losAngeles.parcelQuery);
-    check(ArcGisService(countyClient(), county: losAngeles).sharesAddressLayer)
-        .isTrue();
+    check(
+      losAngeles.layers!.addressQuery,
+    ).equals(losAngeles.layers!.parcelQuery);
+    check(
+      ArcGisService(countyClient(), county: losAngeles).sharesAddressLayer,
+    ).isTrue();
     check(ArcGisService(countyClient()).sharesAddressLayer).isFalse();
   });
 
@@ -428,7 +424,8 @@ void main() {
       reportedCount: 402,
     );
 
-    check(harness.manager.download(region: region, onProgress: (_) {}))
-        .completes();
+    check(
+      harness.manager.download(region: region, onProgress: (_) {}),
+    ).completes();
   });
 }

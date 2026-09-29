@@ -65,8 +65,11 @@ class Address {
   final DateTime? sourceUpdatedAt;
 
   /// A user-facing address including unit, city, state, and ZIP.
-  String get displayAddress {
+  String get displayAddress => formatAddress('CA');
+
+  /// Formats the address in its workspace state.
+  String formatAddress(String stateCode) {
     final unitSuffix = unit.isEmpty ? '' : ' Unit $unit';
-    return '$fullAddress$unitSuffix, $city, CA $zipCode';
+    return '$fullAddress$unitSuffix, $city, $stateCode $zipCode';
   }
 }

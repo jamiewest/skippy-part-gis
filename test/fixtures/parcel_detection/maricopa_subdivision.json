@@ -1,0 +1,295 @@
+{
+  "currentVersion": 11.5,
+  "cimVersion": "3.5.0",
+  "id": 0,
+  "name": "Subdivision",
+  "type": "Feature Layer",
+  "description": "Subdivision is the act of dividing land into pieces that are easier to sell or otherwise develop, usually via a plat. The former single piece as a whole is then known in the United States as a subdivision. If it is used for housing it is typically known as a housing subdivision or housing development, although some developers tend to call these areas communities. Subdivisions may also be for the purpose of commercial or industrial development, and the results vary from retail shopping malls with independently owned out parcels, to industrial parks. There will be multiple subdivisions on top of each other for multistory buildings where each level may be considered a separate subdivision.This data does not represent a legal record. The data was not created by engineering means and should not be used as such.",
+  "geometryType": "esriGeometryPolygon",
+  "sourceSpatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857,
+    "xyTolerance": 0.001,
+    "zTolerance": 0.0002,
+    "mTolerance": 0.0002,
+    "falseX": -20037700,
+    "falseY": -30241100,
+    "xyUnits": 10000,
+    "falseZ": 0,
+    "zUnits": 10000,
+    "falseM": 0,
+    "mUnits": 10000
+  },
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857,
+    "xyTolerance": 0.001,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -20037700,
+    "falseY": -30241100,
+    "xyUnits": 148923141.92838538,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "copyrightText": "",
+  "parentLayer": null,
+  "subLayers": [],
+  "minScale": 100000,
+  "maxScale": 0,
+  "referenceScale": 0.0,
+  "drawingInfo": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSFS",
+        "style": "esriSFSSolid",
+        "color": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "outline": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [
+            122,
+            142,
+            245,
+            255
+          ],
+          "width": 1.5
+        }
+      }
+    },
+    "scaleSymbols": true,
+    "transparency": 0,
+    "labelingInfo": [
+      {
+        "labelExpression": "[SubdivisionName]",
+        "labelPlacement": "esriServerPolygonPlacementAlwaysHorizontal",
+        "removeDuplicates": "none",
+        "multiPart": "labelPerPart",
+        "deconflictionStrategy": "dynamic",
+        "repeatLabel": false,
+        "allowOverrun": true,
+        "stackLabel": false,
+        "useCodedValues": true,
+        "maxScale": 0,
+        "minScale": 5000,
+        "name": "Default",
+        "priority": 1,
+        "symbol": {
+          "type": "esriTS",
+          "color": [
+            68,
+            79,
+            137,
+            255
+          ],
+          "backgroundColor": null,
+          "borderLineColor": null,
+          "borderLineSize": null,
+          "verticalAlignment": "bottom",
+          "horizontalAlignment": "center",
+          "rightToLeft": false,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "kerning": true,
+          "haloColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "haloSize": 2,
+          "font": {
+            "family": "Arial",
+            "size": 7,
+            "style": "normal",
+            "weight": "normal",
+            "decoration": "none"
+          }
+        }
+      }
+    ]
+  },
+  "defaultVisibility": false,
+  "extent": {
+    "xmin": -12616263.4816,
+    "ymin": 3877033.4887999967,
+    "xmax": -12408814.0233,
+    "ymax": 4028783.804200001,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -20037700,
+      "falseY": -30241100,
+      "xyUnits": 148923141.92838538,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "hasAttachments": false,
+  "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+  "displayField": "SubdivisionName",
+  "typeIdField": null,
+  "subtypeFieldName": null,
+  "subtypeField": null,
+  "defaultSubtypeCode": null,
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID",
+      "domain": null
+    },
+    {
+      "name": "SHAPE",
+      "type": "esriFieldTypeGeometry",
+      "alias": "SHAPE",
+      "domain": null
+    },
+    {
+      "name": "SubdivisionName",
+      "type": "esriFieldTypeString",
+      "alias": "SubdivisionName",
+      "length": 120,
+      "domain": null
+    },
+    {
+      "name": "SubdivisionLevel",
+      "type": "esriFieldTypeSmallInteger",
+      "alias": "SubdivisionLevel",
+      "domain": null
+    },
+    {
+      "name": "MCRNumber",
+      "type": "esriFieldTypeString",
+      "alias": "MCRNumber",
+      "length": 10,
+      "domain": null
+    },
+    {
+      "name": "MCRWebLink",
+      "type": "esriFieldTypeString",
+      "alias": "MCRWebLink",
+      "length": 150,
+      "domain": null
+    },
+    {
+      "name": "SHAPE_Length",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE_Length",
+      "domain": null
+    },
+    {
+      "name": "SHAPE_Area",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE_Area",
+      "domain": null
+    }
+  ],
+  "geometryField": {
+    "name": "SHAPE",
+    "type": "esriFieldTypeGeometry",
+    "alias": "SHAPE"
+  },
+  "indexes": [
+    {
+      "name": "FDO_OBJECTID",
+      "fields": "OBJECTID",
+      "isAscending": true,
+      "isUnique": true,
+      "description": ""
+    },
+    {
+      "name": "FDO_SHAPE",
+      "fields": "SHAPE",
+      "isAscending": true,
+      "isUnique": false,
+      "description": ""
+    }
+  ],
+  "subtypes": [],
+  "relationships": [],
+  "canModifyLayer": true,
+  "canScaleSymbols": false,
+  "hasLabels": true,
+  "capabilities": "Map,Query,Data",
+  "maxRecordCount": 2000,
+  "maxSelectionCount": 2000,
+  "supportsStatistics": true,
+  "supportsExceedsLimitStatistics": true,
+  "supportsAdvancedQueries": true,
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "isDataVersioned": false,
+  "ownershipBasedAccessControlForFeatures": {
+    "allowOthersToQuery": true
+  },
+  "useStandardizedQueries": true,
+  "supportedSpatialRelationships": [
+    "esriSpatialRelIntersects",
+    "esriSpatialRelContains",
+    "esriSpatialRelCrosses",
+    "esriSpatialRelEnvelopeIntersects",
+    "esriSpatialRelIndexIntersects",
+    "esriSpatialRelOverlaps",
+    "esriSpatialRelTouches",
+    "esriSpatialRelWithin",
+    "esriSpatialRelRelation"
+  ],
+  "advancedQueryCapabilities": {
+    "useStandardizedQueries": true,
+    "supportsStatistics": true,
+    "supportsPercentileStatistics": true,
+    "supportsHavingClause": true,
+    "supportsOrderBy": true,
+    "supportsDistinct": true,
+    "supportsCountDistinct": true,
+    "supportsAdvancedQueryRelated": true,
+    "supportsQueryRelatedPagination": true,
+    "supportsPagination": true,
+    "supportsLod": false,
+    "supportsQueryWithLodSR": false,
+    "supportsTrueCurve": true,
+    "supportsQueryWithDatumTransformation": true,
+    "supportsReturningQueryExtent": true,
+    "supportsQueryWithDistance": true,
+    "supportsSqlExpression": true,
+    "supportsTimeRelation": true,
+    "supportsSqlFormat": false,
+    "supportsQueryAnalytic": false,
+    "supportsCurrentUserQueries": true
+  },
+  "supportsDatumTransformation": true,
+  "dateFieldsTimeReference": null,
+  "preferredTimeReference": null,
+  "datesInUnknownTimezone": false,
+  "hasGeometryProperties": true,
+  "geometryProperties": {
+    "shapeAreaFieldName": "SHAPE_Area",
+    "shapeLengthFieldName": "SHAPE_Length",
+    "units": "esriMeters",
+    "mapUnits": {
+      "uwkid": 9001
+    }
+  },
+  "hasMetadata": true,
+  "isDataArchived": false,
+  "archivingInfo": {
+    "supportsQueryWithHistoricMoment": false,
+    "startArchivingMoment": -1
+  },
+  "supportsCoordinatesQuantization": true,
+  "supportsDynamicLegends": true
+}

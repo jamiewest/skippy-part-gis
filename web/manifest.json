@@ -1,11 +1,11 @@
 {
-    "name": "riverside_atlas",
-    "short_name": "riverside_atlas",
+    "name": "Atlas",
+    "short_name": "Atlas",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Atlas — a United States GIS workspace.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

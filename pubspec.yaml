@@ -2,7 +2,7 @@ name: riverside_atlas
 description: A macOS GIS prototype for Riverside County address and parcel data.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -20,6 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.12.2
+  flutter: ">=3.44.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -49,7 +50,46 @@ dependencies:
   stream_transform: ^2.1.1
   webview_flutter: ^4.14.1
 
+  # Hosting, DI, logging, configuration, and the AI abstractions the map
+  # assistant is built on. `agents` supplies the agent/tool runtime and
+  # `extensions` the host pipeline everything is registered in; the two
+  # Flutter packages layer widget integration on top.
+  agents: ^2.0.0
+  agents_flutter: ^0.8.0
+  # Named directly because the assistant builds its own Anthropic client to
+  # hand it the container's HTTP client; `agents` adapts that client into a
+  # ChatClient but does not construct one.
+  anthropic_sdk_dart: ^6.0.0
+  extensions: ^0.6.0
+  extensions_flutter: ^0.5.0
+  # Apple bindings from core_ai, pinned so CI uses the same native bridge.
+  foundation_models:
+    git:
+      url: https://github.com/jamiewest/core_ai.git
+      ref: 24a0a12af1001fc780758578b30cbfaf55eccca6
+      path: packages/foundation_models
+  apple_speech:
+    git:
+      url: https://github.com/jamiewest/core_ai.git
+      ref: 24a0a12af1001fc780758578b30cbfaf55eccca6
+      path: packages/apple_speech
+  flutter_markdown_plus: ^1.0.12
+  url_launcher: ^6.3.2
+  flutter_secure_storage: ^10.3.1
+  share_plus: ^13.3.0
+
+# `agents` 2.0.0 declares `a2a: ^4.2.0`, but a2a 4.3.x made `mimeType` and
+# `name` nullable on its file parts, and the agent framework's own a2a
+# adapters have not caught up -- importing `package:agents/agents.dart` fails
+# to compile against 4.3.1. The application uses no a2a itself; this holds the
+# transitive dependency at the version the framework was published against,
+# and should be removed once `agents` widens or fixes its adapters.
+dependency_overrides:
+  a2a: 4.2.0
+
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
@@ -68,7 +108,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

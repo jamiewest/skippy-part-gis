@@ -1,4 +1,6 @@
-# Riverside Atlas
+# Atlas
+
+Atlas opens with a map of the contiguous United States. Select a county to zoom in.
 
 A macOS Flutter prototype for searching and visualizing public county address
 points, assessor parcels, and county boundaries. All 58 California counties are
@@ -272,11 +274,18 @@ region or a single county for that reason, and there is deliberately no
 The application is read-only. County GIS data is approximate and intended for
 reference use; parcel geometry is not a legal survey boundary.
 
-The app no longer opens California's ClaimIt site. When a locally cached
-unclaimed-property check exists for the selected owner, its outcome and result
-count are written straight into the property details as an `UNCLAIMED` row;
-when none exists the row is omitted. There is no in-app lookup because the
-state's search API is gated behind Cloudflare Turnstile verification.
+The owner row includes Google and California ClaimIt search buttons. ClaimIt
+opens in the same side panel; the desktop/mobile app fills the owner's name and
+starts the official search. Assessor-style individual names are split into first
+and last name, while business names use the business-name field. The search uses
+only the name; ClaimIt's form remains editable and handles any required
+verification. In the web build, a copy-and-open button hands off to ClaimIt in a
+new tab for manual entry because browsers cannot fill another site's form.
+
+When a locally cached unclaimed-property check exists for the selected owner,
+its outcome and result count appear in the property details as an `UNCLAIMED`
+row; when none exists the row is omitted. Opening ClaimIt does not update these
+saved results.
 
 ## Structure
 
@@ -289,3 +298,140 @@ state's search API is gated behind Cloudflare Turnstile verification.
 Counties are configured, not special-cased. `lib/data/services/county_source.dart`
 is the registry, and `docs/adding-a-county.md` is the checklist for giving a
 county its own services instead of the statewide default.
+
+## Map assistant providers and dictation
+
+Run the app normally, open the map assistant, and use the **AI provider**
+dropdown to choose **Anthropic**, **OpenAI**, **Google Gemini**, or **Apple**. No build arguments
+are required. Click the settings button beside the dropdown to enter an API
+key and optional model for Anthropic, OpenAI, or Google Gemini. Apple uses the on-device
+model without a key and reports whether it is ready.
+
+Settings and keys are saved per provider and restored when Atlas reopens,
+including the last selected provider. Credentials use Apple Keychain on macOS
+and iOS, and encrypted browser storage on the web (HTTPS or localhost). Clear
+a provider’s key and apply to remove it. Storage failures are shown in the
+assistant panel. Applying
+settings or switching providers starts a fresh conversation; switching is
+disabled while an answer or dictation is in progress. OpenAI uses the Responses
+API with the same GIS tools and instructions as the other providers. Its
+default model is `gpt-4.1`; Anthropic defaults to `claude-sonnet-5`.
+Google Gemini uses the generateContent API with the same GIS tools and defaults
+to `gemini-3.8-flash`. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+
+The assistant uses the `foundation_models` and `apple_speech` packages from
+[jamiewest/core_ai](https://github.com/jamiewest/core_ai), pinned to a Git commit
+in `pubspec.yaml`. The on-device provider uses Apple's installed system model;
+there is no separate model file to choose or bundle. The lower-level `core_ai`
+package loads custom `.aimodel` assets and is not needed for this conversation
+workflow. These plugin versions require Xcode 27 to build; local inference
+requires iOS/macOS 26+, eligible hardware, and Apple Intelligence enabled.
+
+```shell
+flutter run -d macos
+```
+
+Environment variables and build arguments remain optional startup defaults.
+`ATLAS_ASSISTANT_PROVIDER` accepts:
+
+| Value | Behavior |
+| --- | --- |
+| `auto` (default) | Uses the first configured key in this order: Anthropic, OpenAI, Google Gemini; otherwise selects local Apple inference on native iOS/macOS. |
+| `apple` | On-device Apple Foundation Models. No inference API key. |
+| `apple-cloud` | Apple Private Cloud Compute, explicitly selected. Requires iOS/macOS 27 and Apple's approved `com.apple.developer.private-cloud-compute` entitlement and provisioning. |
+| `anthropic` | Existing agent runtime; uses `ATLAS_ANTHROPIC_API_KEY` and optional `ATLAS_ASSISTANT_MODEL`. |
+| `openai` | OpenAI Responses API; uses `ATLAS_OPENAI_API_KEY` and optional `ATLAS_ASSISTANT_MODEL`. |
+| `gemini` | Google Gemini generateContent API; uses `ATLAS_GEMINI_API_KEY` and optional `ATLAS_ASSISTANT_MODEL`. |
+
+Apple providers report readiness in the panel and offer retry. They never
+silently switch to a cloud provider. The cloud choice is wired, but the app
+does not ship a PCC entitlement: enable it in the signed target after Apple
+approves access. Cloud quotas and device/account availability still apply.
+Apple inference and dictation are unavailable in a web browser; text input
+continues to work with the configured Anthropic, OpenAI, or Google Gemini provider.
+
+Open the map assistant, draw an area, and press the microphone. Speech is
+transcribed locally in English. Press stop, review or edit the question, then
+send it. The app requests microphone access on that first press, and offers
+an explicit download if the English speech assets are missing. Closing the
+panel stops capture. Typed questions remain available without microphone
+permission. With a cloud inference provider, the submitted text goes to that
+provider; recorded audio is not sent to it.
+
+Try: “What are the population and median household income for the census
+tracts touching this area?” The assistant can inspect the current map, draw
+circles/rectangles, list addresses, read the selected parcel, and retrieve
+Census figures. It uses **in-process Dart tools**, shared by all providers;
+no MCP server is configured or required. It does not yet geocode arbitrary
+spoken place names: select the location on the map or provide coordinates.
+The Census tool covers the measures declared in `censusVariables`, rather
+than arbitrary Census tables.
+
+The assistant also receives camera and layer capabilities before each answer.
+Try “Which Flock cameras are in this area?” or “Find the published lidar layers
+and turn one on.” The shared tools include:
+
+- `get_map_capabilities`: camera availability, loaded camera samples, active
+  overlays, imagery captures, source attribution and limitations.
+- `query_map_cameras`: OpenStreetMap ALPR/Flock records for the exact drawn
+  shape or viewport, including coordinates, vendor, operator, direction and
+  source links. It works with the camera layer hidden, supports `flockOnly`,
+  and returns pages of 60 records using `nextOffset`. Queries require live
+  mode and an extent spanning at most one degree on each axis.
+- `list_map_layers`: lists available portals, then searches one returned
+  `portalRoot` for published services, including inactive lidar and elevation
+  layers. `query` filters names/themes; `nextOffset` pages through results.
+- `describe_map_layer`: reads source metadata and advertised capabilities
+  for a returned `layerId`.
+- `set_map_layer_visibility`: enables or disables a returned `layerId`, or
+  `alpr_cameras`, using the same controls as the map.
+
+Camera records are crowdsourced locations, not a complete inventory or live
+feeds. Lidar/elevation layers expose catalog metadata and map rendering;
+these tools do not read raster pixels, sample heights or retrieve point clouds.
+
+Before each assistant answer, GIS discovery automatically samples the drawn
+area (or the visible map extent). It walks available ArcGIS catalogs, including
+inactive layers, and looks for polygon parcel outlines without requiring a
+street address. Possible owner names retain their source URL, field and parcel
+ID; ambiguous names are labelled as candidates, not verified ownership.
+`discover_area_data` continues the scan in bounded batches and can inspect
+additional columns of a discovered layer. Samples contain at most five records
+per layer, so they are not a complete list of parcels or owners. Failed sources,
+unsupported services and partial scans are reported. Nonspatial tables expose
+their schema only until a verified join can associate records with the area.
+Discovery identifies outline sources; it does not automatically replace the
+configured parcel layer.
+
+Answers appear in the conversation, and drawn areas remain on the map.
+Census responses identify the source and configured dataset (`2023/acs/acs5`).
+These are whole-tract figures, not estimates inside the drawn circle; median
+values are ranges across tracts. A free Census key is still required by this
+app for figures, even with local inference. Map/Census retrieval uses the
+network. Long conversations or large tool results can exhaust the local
+model's context; start a new conversation and use a smaller area.
+
+Validation:
+
+```shell
+flutter test test/apple_assistant_backend_test.dart \
+  test/assistant_dictation_test.dart test/map_assistant_test.dart \
+  test/map_assistant_tools_test.dart test/host_bootstrap_test.dart
+# Real local inference, with fixture Census results and no microphone access:
+flutter drive --driver=test_driver/integration_test.dart \
+  --target=integration_test/apple_assistant_test.dart -d macos
+```
+
+The native integration test requires a ready Apple Intelligence model. Live
+microphone capture and PCC access also need testing on the intended signed
+app/device; unit tests cover permission denial, asset download, transcription
+updates and cancellation without recording audio.
+
+## Route planning
+
+Use the map’s **Build a route** button, or ask the assistant to route between
+places. Routes include alternatives, draggable stops, turn directions, and
+estimated directional ALPR/Flock exposure. Camera-aware options compare checked
+candidates and request footprint-avoidance detours within an explicit time limit.
+They cannot guarantee camera-free travel or determine lane-specific visibility.
+See [routing setup, behavior, and limitations](docs/routing.md).

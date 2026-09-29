@@ -22,9 +22,8 @@ const _namedEntities = <String, String>{
 
 /// The digits in [value], with separators, letters, and spacing removed.
 ///
-/// Counties format parcel numbers inconsistently — `213-191-035` and
-/// `213191035` name the same Riverside parcel — so the digits are the only
-/// portable form to compare and to key a cache by.
+/// Used for numeric county forms and ZIP codes. Parcel cache identities use
+/// [normalizeApn] so an alphanumeric suffix remains significant.
 String digitsOnly(String value) => value.replaceAll(_nonDigits, '');
 
 /// [value] upper-cased with every run of punctuation collapsed to one space.
@@ -56,3 +55,7 @@ String decodeHtmlEntities(String value) {
     return codePoint == null ? match.group(0)! : String.fromCharCode(codePoint);
   });
 }
+
+/// Parcel identifiers preserve letters as well as digits.
+String normalizeApn(String value) =>
+    value.toUpperCase().replaceAll(_nonAlphanumeric, '');

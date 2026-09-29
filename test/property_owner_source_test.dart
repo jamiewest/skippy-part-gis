@@ -29,7 +29,7 @@ void main() {
 
     test('ignores components the county left blank', () {
       const sparse = OwnerQuery(
-        countyId: 'riverside',
+        countyId: 'ca_riverside',
         subject: OwnerQuerySubject.address,
         sourceId: 16055,
         apn: '213191035',
@@ -42,7 +42,7 @@ void main() {
 
     test('rejects a query with no house number to confirm', () {
       const parcelQuery = OwnerQuery(
-        countyId: 'riverside',
+        countyId: 'ca_riverside',
         subject: OwnerQuerySubject.parcel,
         sourceId: 1819,
         apn: '213191035',
@@ -110,7 +110,7 @@ void main() {
 }
 
 const _query = OwnerQuery(
-  countyId: 'riverside',
+  countyId: 'ca_riverside',
   subject: OwnerQuerySubject.address,
   sourceId: 16055,
   apn: '213191035',

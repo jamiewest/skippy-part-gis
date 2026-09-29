@@ -277,7 +277,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -299,6 +299,9 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(snapshots, snapshots.county);
         await _scopeSettingsToRiverside();
       }
+      if (from < 6) {
+        await _prefixCaliforniaCountyIds();
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -318,6 +321,43 @@ class AppDatabase extends _$AppDatabase {
     await customStatement('''
       UPDATE settings SET key = 'county_boundary:riverside'
       WHERE key = 'county_boundary'
+    ''');
+  }
+
+  /// Moves county-scoped rows onto their state-prefixed identifiers.
+  ///
+  /// County identifiers gained a state prefix when the application went
+  /// national, because a county name does not identify a county across fifty
+  /// states. Everything already on disk was written by a California-only
+  /// build, so every existing identifier is a California one and takes the
+  /// `ca_` prefix. Without this, an install's downloaded snapshots, saved
+  /// boundaries and cached owner names would all be orphaned -- present in the
+  /// database, scoped to identifiers nothing looks up any more.
+  Future<void> _prefixCaliforniaCountyIds() async {
+    await customStatement('''
+      UPDATE snapshots SET county = 'ca_' || county
+      WHERE county NOT LIKE 'ca\\_%' ESCAPE '\\'
+    ''');
+    await customStatement('''
+      UPDATE settings
+      SET key = 'active_snapshot_id:ca_'
+        || substr(key, length('active_snapshot_id:') + 1)
+      WHERE key LIKE 'active_snapshot_id:%'
+        AND key NOT LIKE 'active_snapshot_id:ca\\_%' ESCAPE '\\'
+    ''');
+    await customStatement('''
+      UPDATE settings
+      SET key = 'county_boundary:ca_'
+        || substr(key, length('county_boundary:') + 1)
+      WHERE key LIKE 'county_boundary:%'
+        AND key NOT LIKE 'county_boundary:ca\\_%' ESCAPE '\\'
+    ''');
+    // Owner cache keys dropped their separate state segment at the same time:
+    // `us:ca:riverside:...` becomes `us:ca_riverside:...`.
+    await customStatement(r'''
+      UPDATE property_owner_cache
+      SET property_key = 'us:ca_' || substr(property_key, length('us:ca:') + 1)
+      WHERE property_key LIKE 'us:ca:%'
     ''');
   }
 

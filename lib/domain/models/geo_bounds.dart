@@ -49,6 +49,18 @@ class GeoBounds {
         north: math.min(90, north + latitude),
       );
 
+  /// The smallest rectangle containing both this one and [other].
+  ///
+  /// Used to accumulate a publisher's coverage from the extents its
+  /// individual items advertise, which is what lets a catalogue found at
+  /// runtime be offered only where its publisher actually maps.
+  GeoBounds union(GeoBounds other) => GeoBounds(
+    west: math.min(west, other.west),
+    south: math.min(south, other.south),
+    east: math.max(east, other.east),
+    north: math.max(north, other.north),
+  );
+
   /// Whether this rectangle overlaps [other].
   bool intersects(GeoBounds other) =>
       west <= other.east &&

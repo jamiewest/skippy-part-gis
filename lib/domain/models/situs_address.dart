@@ -33,10 +33,13 @@ final class SitusAddress {
   final String zipCode;
 
   /// The full mailable address, such as `1364 W RIALTO AVE, RIALTO, CA 92376`.
-  String get fullAddress {
+  String get fullAddress => formatAddress('CA');
+
+  /// Formats a resolved situs in its workspace state.
+  String formatAddress(String stateCode) {
     final tail = [
       if (city.isNotEmpty) city,
-      ['CA', if (zipCode.isNotEmpty) zipCode].join(' '),
+      [stateCode, if (zipCode.isNotEmpty) zipCode].join(' '),
     ].join(', ');
     return '$streetAddress, $tail';
   }

@@ -49,3 +49,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Intermediates from tool/gis_inventory. Derived, large, regenerable.
+/tool/gis_inventory/.work/

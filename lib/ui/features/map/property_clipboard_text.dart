@@ -9,17 +9,21 @@ import 'package:riverside_atlas/ui/features/map/view_models/gis_map_view_model.d
 /// Counties do not all publish both parts: San Bernardino parcels carry no ZIP
 /// code at all. Interpolating the blanks would produce `HESPERIA, CA ` or
 /// `, CA `, which reads as real data once it is pasted somewhere else.
-String propertyLocationLine({required String city, required String zipCode}) {
+String propertyLocationLine({
+  required String city,
+  required String zipCode,
+  String stateCode = 'CA',
+}) {
   if (city.isEmpty && zipCode.isEmpty) {
     return '';
   }
   if (zipCode.isEmpty) {
-    return '$city, CA';
+    return '$city, $stateCode';
   }
   if (city.isEmpty) {
-    return 'CA $zipCode';
+    return '$stateCode $zipCode';
   }
-  return '$city, CA $zipCode';
+  return '$city, $stateCode $zipCode';
 }
 
 /// The one-line outcome of a saved California unclaimed-property check.
@@ -47,6 +51,8 @@ String _formatDate(DateTime value) {
 /// placeholder, so every line that is pasted is a fact from the source.
 String? propertyClipboardText({
   required String countyName,
+  String stateCode = 'CA',
+  String? parcelSourceLabel,
   required Address? address,
   required Parcel? parcel,
   required PropertyOwnership? ownership,
@@ -74,7 +80,11 @@ String? propertyClipboardText({
     add('UNIT', address.unit);
     add(
       'LOCATION',
-      propertyLocationLine(city: address.city, zipCode: address.zipCode),
+      propertyLocationLine(
+        stateCode: stateCode,
+        city: address.city,
+        zipCode: address.zipCode,
+      ),
     );
     add('APN', address.apn);
     add('OWNER', ownerName);
@@ -84,19 +94,23 @@ String? propertyClipboardText({
       address.addressType.isEmpty ? '' : 'County code ${address.addressType}',
     );
     add('UNITS', '${address.numberOfUnits}');
-    add('SOURCE', '$countyName Address Points');
+    add('SOURCE', parcelSourceLabel ?? '$countyName Address Points');
   } else if (parcel != null) {
     add('ADDRESS', parcel.situsAddress);
     add(
       'LOCATION',
-      propertyLocationLine(city: parcel.city, zipCode: parcel.zipCode),
+      propertyLocationLine(
+        stateCode: stateCode,
+        city: parcel.city,
+        zipCode: parcel.zipCode,
+      ),
     );
     add('APN', parcel.apn);
     add('OWNER', ownerName);
     add('UNCLAIMED', unclaimed);
     add('LAND USE', parcel.landUse);
     add('ACREAGE', parcel.acreage?.toStringAsFixed(2) ?? '');
-    add('SOURCE', '$countyName Assessor');
+    add('SOURCE', parcelSourceLabel ?? '$countyName Assessor');
   }
 
   return lines.isEmpty ? null : lines.join('\n');

@@ -124,6 +124,31 @@ void main() {
   });
 
   group('OverpassAlprService', () {
+    test(
+      'rejects HTTP 200 runtime errors without caching partial data',
+      () async {
+        var requests = 0;
+        final service = OverpassAlprService(
+          MockClient((_) async {
+            requests++;
+            return http.Response(
+              jsonEncode({
+                if (requests == 1) 'remark': 'runtime error: Query timed out',
+                'elements': [_flockNode],
+              }),
+              200,
+            );
+          }),
+        );
+        await expectLater(
+          service.queryViewport(_viewport),
+          throwsFormatException,
+        );
+        expect(await service.queryViewport(_viewport), hasLength(1));
+        expect(requests, 2);
+      },
+    );
+
     test('posts a bounded ALPR query and parses the elements', () async {
       String? sentBody;
       final client = MockClient((request) async {

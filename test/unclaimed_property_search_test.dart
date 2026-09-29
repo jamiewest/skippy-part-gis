@@ -18,6 +18,28 @@ void main() {
       expect(query.cacheKey, 'SMITH JOHN A|RIVERSIDE|92501');
     });
 
+    for (final name in ["O'BRIEN & SONS LLC", 'SMITH AND JONES INC']) {
+      test('preserves the full business name $name', () {
+        final query = UnclaimedPropertyQuery.fromOwner(
+          ownerName: name,
+          city: '',
+          zipCode: '',
+        );
+        expect(query.lastName, name);
+        expect(query.firstName, isEmpty);
+      });
+    }
+
+    test('uses the first listed individual for joint ownership', () {
+      final query = UnclaimedPropertyQuery.fromOwner(
+        ownerName: 'SMITH JOHN & JANE',
+        city: '',
+        zipCode: '',
+      );
+      expect(query.lastName, 'SMITH');
+      expect(query.firstName, 'JOHN');
+    });
+
     test('uses the complete business name as the last-name search', () {
       final query = UnclaimedPropertyQuery.fromOwner(
         ownerName: 'MISSION INN RIVERSIDE',

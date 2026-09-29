@@ -23,7 +23,7 @@ void main() {
         jsonEncode({
           'features': [
             {
-              'attributes': {'County': 'Riverside', 'FIPS': '065'},
+              'attributes': {'NAME': 'Riverside County', 'GEOID': '06065'},
               'geometry': {
                 'rings': [
                   [
@@ -44,11 +44,13 @@ void main() {
 
     final boundary = await ArcGisService(client).fetchCountyBoundary();
 
-    check(captured.url.path).endsWith('/CA_Counties/FeatureServer/0/query');
-    check(captured.bodyFields['where']!).equals("FIPS='065'");
-    check(captured.bodyFields['outFields']!).equals('County,FIPS');
-    check(boundary.name).equals('Riverside');
-    check(boundary.fips).equals('065');
+    check(
+      captured.url.path,
+    ).endsWith('/TIGERweb/State_County/MapServer/1/query');
+    check(captured.bodyFields['where']!).equals("GEOID='06065'");
+    check(captured.bodyFields['outFields']!).equals('NAME,GEOID');
+    check(boundary.name).equals('Riverside County');
+    check(boundary.fips).equals('06065');
     check(boundary.bounds.west).isCloseTo(-117.67, 0.001);
     check(boundary.bounds.east).isCloseTo(-114.43, 0.001);
   });

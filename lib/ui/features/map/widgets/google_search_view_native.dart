@@ -3,19 +3,28 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// Builds an embedded WebView showing [searchUri].
 Widget defaultGoogleSearchView(BuildContext context, Uri searchUri) {
-  return _GoogleSearchWebView(searchUri: searchUri);
+  return SearchWebView(searchUri: searchUri);
 }
 
-class _GoogleSearchWebView extends StatefulWidget {
-  const _GoogleSearchWebView({required this.searchUri});
+/// Embedded browser with optional initialization after a page loads.
+class SearchWebView extends StatefulWidget {
+  const SearchWebView({
+    required this.searchUri,
+    this.searchTitle = 'Google Search',
+    this.onPageFinished,
+    super.key,
+  });
 
   final Uri searchUri;
+  final String searchTitle;
+  final Future<void> Function(WebViewController controller, String url)?
+  onPageFinished;
 
   @override
-  State<_GoogleSearchWebView> createState() => _GoogleSearchWebViewState();
+  State<SearchWebView> createState() => _SearchWebViewState();
 }
 
-class _GoogleSearchWebViewState extends State<_GoogleSearchWebView> {
+class _SearchWebViewState extends State<SearchWebView> {
   late final WebViewController _controller;
   bool _isLoading = true;
   String? _errorMessage;
@@ -35,9 +44,10 @@ class _GoogleSearchWebViewState extends State<_GoogleSearchWebView> {
               });
             }
           },
-          onPageFinished: (_) {
+          onPageFinished: (url) async {
             if (mounted) {
               setState(() => _isLoading = false);
+              await widget.onPageFinished?.call(_controller, url);
             }
           },
           onWebResourceError: (error) {
@@ -45,7 +55,7 @@ class _GoogleSearchWebViewState extends State<_GoogleSearchWebView> {
               setState(() {
                 _isLoading = false;
                 _errorMessage =
-                    'Google Search could not be loaded. Check your connection '
+                    '${widget.searchTitle} could not be loaded. Check your connection '
                     'and try again.';
               });
             }
@@ -93,7 +103,7 @@ class _GoogleSearchWebViewState extends State<_GoogleSearchWebView> {
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Retry Google search',
+                      tooltip: 'Retry ${widget.searchTitle}',
                       onPressed: () => _controller.reload(),
                       icon: const Icon(Icons.refresh),
                     ),

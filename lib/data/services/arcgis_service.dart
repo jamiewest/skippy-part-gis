@@ -26,7 +26,7 @@ final class ArcGisService {
   /// Creates a service using an injected HTTP [client].
   ///
   /// Reads Riverside County unless another [county] is supplied.
-  ArcGisService(this._client, {CountySource? county})
+  ArcGisService(this._client, {CountySource? county, this.onInvalidSource})
     : source = county ?? CountySources.riverside;
 
   /// The fewest rows a spatially filtered query should ever ask a layer for.
@@ -42,7 +42,20 @@ final class ArcGisService {
   /// Endpoints and attribute schema for the county being read.
   final CountySource source;
 
+  /// The parcel and address layers, which every caller here requires.
+  ///
+  /// Reaching this on a county with no parcel coverage is a wiring mistake,
+  /// not a user-facing condition: [AppDependencies] gives such a county
+  /// empty address and parcel repositories, and the workspace reports the
+  /// absence through [CountySource.hasParcelCoverage] instead of querying.
+  CountyLayers get _layers =>
+      source.layers ??
+      (throw StateError(
+        'No public layer publishes parcels for ${source.displayName}.',
+      ));
+
   final http.Client _client;
+  final void Function()? onInvalidSource;
   final RetryOptions _retryOptions = const RetryOptions(maxAttempts: 3);
 
   /// Fetches the county-maintained boundary polygon.
@@ -50,7 +63,7 @@ final class ArcGisService {
   /// The layer publishes every California county, so the FIPS filter on the
   /// source is what isolates this one.
   Future<RegionBoundary> fetchCountyBoundary() async {
-    final json = await _post(source.boundaryQuery, {
+    final json = await _post(source.effectiveBoundaryQuery, {
       'where': source.boundaryFilter,
       'outFields': '${source.boundaryNameField},${source.boundaryFipsField}',
       'returnGeometry': 'true',
@@ -82,12 +95,26 @@ final class ArcGisService {
     if (normalized.isEmpty) {
       return const [];
     }
-    final field = source.addressSearchField;
-    final matcher = source.uppercaseAddressSearch ? 'UPPER($field)' : field;
-    final json = await _post(source.addressQuery, {
-      'where': _and(source.countyFilter, "$matcher LIKE '$normalized%'"),
-      'outFields': source.addressFields,
-      ...source.addressQueryParameters,
+    final field = _layers.addressSearchField;
+    var prefix = normalized;
+    var numberClause = '1=1';
+    if (_layers.addressNumberField case final numberField?) {
+      final parts = RegExp(r'^(\d+)\s+(.+)$').firstMatch(normalized);
+      if (parts != null) {
+        numberClause = "$numberField = '${parts[1]}'";
+        prefix = parts[2]!;
+      }
+    }
+    final matcher = _layers.uppercaseAddressSearch ? 'UPPER($field)' : field;
+    final json = await _post(_layers.addressQuery, {
+      'where': _and(
+        _layers.countyFilter,
+        _and(numberClause, "$matcher LIKE '$prefix%'"),
+      ),
+      if (_layers.searchBounds case final bounds?)
+        ..._envelopeParameters(bounds),
+      'outFields': _layers.addressFields,
+      ..._layers.addressQueryParameters,
       'outSR': '4326',
       'orderByFields': '$field ASC',
       'resultRecordCount': '$limit',
@@ -101,11 +128,11 @@ final class ArcGisService {
     GeoBounds bounds, {
     int limit = 2000,
   }) async {
-    final json = await _post(source.addressQuery, {
+    final json = await _post(_layers.addressQuery, {
       'where': '1=1',
       ..._envelopeParameters(bounds),
-      'outFields': source.addressFields,
-      ...source.addressQueryParameters,
+      'outFields': _layers.addressFields,
+      ..._layers.addressQueryParameters,
       'outSR': '4326',
       'resultRecordCount': '${_spatialRecordCount(limit)}',
       'f': 'json',
@@ -124,10 +151,10 @@ final class ArcGisService {
     GeoBounds bounds, {
     int limit = 2000,
   }) async {
-    final json = await _post(source.parcelQuery, {
+    final json = await _post(_layers.parcelQuery, {
       'where': '1=1',
       ..._envelopeParameters(bounds),
-      'outFields': source.parcelFields,
+      'outFields': _layers.parcelFields,
       'returnGeometry': 'true',
       'maxAllowableOffset': '${_pixelSize(bounds)}',
       'outSR': '4326',
@@ -139,22 +166,22 @@ final class ArcGisService {
 
   /// All address object IDs intersecting [bounds].
   Future<List<int>> fetchAddressObjectIds(GeoBounds bounds) {
-    return _fetchObjectIds(source.addressQuery, bounds);
+    return _fetchObjectIds(_layers.addressQuery, bounds);
   }
 
   /// All parcel object IDs intersecting [bounds].
   Future<List<int>> fetchParcelObjectIds(GeoBounds bounds) {
-    return _fetchObjectIds(source.parcelQuery, bounds);
+    return _fetchObjectIds(_layers.parcelQuery, bounds);
   }
 
   /// How many county address points fall inside [bounds].
   Future<int> countAddresses(GeoBounds bounds) {
-    return _count(source.addressQuery, bounds);
+    return _count(_layers.addressQuery, bounds);
   }
 
   /// How many county parcels fall inside [bounds].
   Future<int> countParcels(GeoBounds bounds) {
-    return _count(source.parcelQuery, bounds);
+    return _count(_layers.parcelQuery, bounds);
   }
 
   /// Fetches one ordered page of address points inside [bounds].
@@ -167,13 +194,13 @@ final class ArcGisService {
     required int offset,
     required int limit,
   }) async {
-    final json = await _post(source.addressQuery, {
-      'where': _and(source.countyFilter, '1=1'),
+    final json = await _post(_layers.addressQuery, {
+      'where': _and(_layers.countyFilter, '1=1'),
       ..._envelopeParameters(bounds),
-      'outFields': source.addressFields,
-      ...source.addressQueryParameters,
+      'outFields': _layers.addressFields,
+      ..._layers.addressQueryParameters,
       'outSR': '4326',
-      'orderByFields': '${source.objectIdField} ASC',
+      'orderByFields': '${_layers.objectIdField} ASC',
       'resultOffset': '$offset',
       'resultRecordCount': '$limit',
       'f': 'json',
@@ -187,13 +214,13 @@ final class ArcGisService {
     required int offset,
     required int limit,
   }) async {
-    final json = await _post(source.parcelQuery, {
-      'where': _and(source.countyFilter, '1=1'),
+    final json = await _post(_layers.parcelQuery, {
+      'where': _and(_layers.countyFilter, '1=1'),
       ..._envelopeParameters(bounds),
-      'outFields': source.parcelFields,
+      'outFields': _layers.parcelFields,
       'returnGeometry': 'true',
       'outSR': '4326',
-      'orderByFields': '${source.objectIdField} ASC',
+      'orderByFields': '${_layers.objectIdField} ASC',
       'resultOffset': '$offset',
       'resultRecordCount': '$limit',
       'f': 'json',
@@ -206,7 +233,7 @@ final class ArcGisService {
   /// A county read through the statewide fabric has no separate address layer:
   /// its address points are parcel centroids. Downloading such a county twice
   /// would double the traffic for one set of rows.
-  bool get sharesAddressLayer => source.addressQuery == source.parcelQuery;
+  bool get sharesAddressLayer => _layers.sharesAddressLayer;
 
   /// Fetches one page as both address points and parcels in a single request.
   ///
@@ -218,14 +245,14 @@ final class ArcGisService {
     required int offset,
     required int limit,
   }) async {
-    final json = await _post(source.parcelQuery, {
-      'where': _and(source.countyFilter, '1=1'),
+    final json = await _post(_layers.parcelQuery, {
+      'where': _and(_layers.countyFilter, '1=1'),
       ..._envelopeParameters(bounds),
-      'outFields': _mergeFields(source.addressFields, source.parcelFields),
+      'outFields': _mergeFields(_layers.addressFields, _layers.parcelFields),
       'returnGeometry': 'true',
-      'returnCentroid': 'true',
+      if (_layers.supportsCentroid) 'returnCentroid': 'true',
       'outSR': '4326',
-      'orderByFields': '${source.objectIdField} ASC',
+      'orderByFields': '${_layers.objectIdField} ASC',
       'resultOffset': '$offset',
       'resultRecordCount': '$limit',
       'f': 'json',
@@ -233,18 +260,18 @@ final class ArcGisService {
     final features = arcGisFeatures(json);
     return (
       addresses: features
-          .map(source.effectiveAddressMapper.address)
+          .map(_layers.effectiveAddressMapper.address)
           .toList(growable: false),
-      parcels: features.map(source.mapper.parcel).toList(growable: false),
+      parcels: features.map(_layers.mapper.parcel).toList(growable: false),
     );
   }
 
   /// Fetches a deterministic batch of addresses by ArcGIS object ID.
   Future<List<Address>> fetchAddressBatch(List<int> objectIds) async {
-    final json = await _post(source.addressQuery, {
+    final json = await _post(_layers.addressQuery, {
       'objectIds': objectIds.join(','),
-      'outFields': source.addressFields,
-      ...source.addressQueryParameters,
+      'outFields': _layers.addressFields,
+      ..._layers.addressQueryParameters,
       'outSR': '4326',
       'f': 'json',
     });
@@ -253,9 +280,9 @@ final class ArcGisService {
 
   /// Fetches a deterministic batch of parcels by ArcGIS object ID.
   Future<List<Parcel>> fetchParcelBatch(List<int> objectIds) async {
-    final json = await _post(source.parcelQuery, {
+    final json = await _post(_layers.parcelQuery, {
       'objectIds': objectIds.join(','),
-      'outFields': source.parcelFields,
+      'outFields': _layers.parcelFields,
       'returnGeometry': 'true',
       'outSR': '4326',
       'f': 'json',
@@ -266,18 +293,18 @@ final class ArcGisService {
   List<Address> _addresses(Map<String, Object?> json) {
     return arcGisFeatures(
       json,
-    ).map(source.effectiveAddressMapper.address).toList(growable: false);
+    ).map(_layers.effectiveAddressMapper.address).toList(growable: false);
   }
 
   List<Parcel> _parcels(Map<String, Object?> json) {
     return arcGisFeatures(
       json,
-    ).map(source.mapper.parcel).toList(growable: false);
+    ).map(_layers.mapper.parcel).toList(growable: false);
   }
 
   Future<int> _count(Uri endpoint, GeoBounds bounds) async {
     final json = await _post(endpoint, {
-      'where': _and(source.countyFilter, '1=1'),
+      'where': _and(_layers.countyFilter, '1=1'),
       ..._envelopeParameters(bounds),
       'returnCountOnly': 'true',
       'f': 'json',
@@ -291,7 +318,7 @@ final class ArcGisService {
 
   Future<List<int>> _fetchObjectIds(Uri endpoint, GeoBounds bounds) async {
     final json = await _post(endpoint, {
-      'where': '1=1',
+      'where': _layers.countyFilter,
       ..._envelopeParameters(bounds),
       'returnIdsOnly': 'true',
       'f': 'json',
@@ -308,6 +335,37 @@ final class ArcGisService {
     Uri endpoint,
     Map<String, String> body,
   ) async {
+    // Older MapServers cannot page by offset. Enumerate this bounded tile's
+    // IDs and fetch a stable slice instead of repeating the first page.
+    if (body.containsKey('resultOffset') && !_layers.supportsPagination) {
+      final idsResponse = await _post(endpoint, {
+        'f': 'json',
+        'where': body['where'] ?? '1=1',
+        for (final key in ['geometry', 'geometryType', 'inSR', 'spatialRel'])
+          key: ?body[key],
+        'returnIdsOnly': 'true',
+      });
+      if (idsResponse['objectIds'] is! List ||
+          idsResponse['exceededTransferLimit'] == true) {
+        throw const ArcGisException(
+          'The parcel source cannot enumerate this area completely.',
+        );
+      }
+      final ids =
+          (idsResponse['objectIds'] as List)
+              .whereType<num>()
+              .map((n) => n.toInt())
+              .toList()
+            ..sort();
+      final batch = ids
+          .skip(int.parse(body['resultOffset']!))
+          .take(int.parse(body['resultRecordCount']!))
+          .toList();
+      if (batch.isEmpty) return {'features': <Object?>[]};
+      body = {...body, 'objectIds': batch.join(',')}
+        ..remove('resultOffset')
+        ..remove('orderByFields');
+    }
     final response = await _retryOptions.retry(() async {
       final current = await _client
           .post(
@@ -325,6 +383,11 @@ final class ArcGisService {
     }, retryIf: (_) => true);
 
     if (response.statusCode != 200) {
+      if (response.statusCode >= 400 &&
+          response.statusCode < 500 &&
+          endpoint != source.effectiveBoundaryQuery) {
+        onInvalidSource?.call();
+      }
       throw ArcGisException(
         'The county GIS service returned ${response.statusCode}.',
       );
@@ -334,6 +397,15 @@ final class ArcGisService {
       throw const ArcGisException('The county returned an invalid response.');
     }
     if (decoded['error'] case final Map<String, Object?> error) {
+      final code = error['code'];
+      if (endpoint != source.effectiveBoundaryQuery &&
+          ((code is num && code >= 400 && code < 500) ||
+              RegExp(
+                'field|column|invalid.*query',
+                caseSensitive: false,
+              ).hasMatch('$error'))) {
+        onInvalidSource?.call();
+      }
       throw ArcGisException(
         arcGisString(
           error['message'],

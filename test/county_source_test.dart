@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:riverside_atlas/data/services/arcgis_service.dart';
 import 'package:riverside_atlas/data/services/county_source.dart';
+import 'package:riverside_atlas/data/services/us_geography.g.dart';
 import 'package:riverside_atlas/domain/models/geo_bounds.dart';
+import 'package:riverside_atlas/domain/models/gis_portal.dart';
 
 void main() {
   const valleyBounds = GeoBounds(
@@ -35,7 +37,7 @@ void main() {
         jsonEncode({
           'features': [
             {
-              'attributes': {'County': 'San Bernardino', 'FIPS': '071'},
+              'attributes': {'NAME': 'San Bernardino County', 'GEOID': '06071'},
               'geometry': {
                 'rings': [
                   [
@@ -56,10 +58,15 @@ void main() {
 
     final boundary = await sanBernardinoService(client).fetchCountyBoundary();
 
-    check(captured.url.path).endsWith('/CA_Counties/FeatureServer/0/query');
-    check(captured.bodyFields['where']!).equals("FIPS='071'");
-    check(boundary.name).equals('San Bernardino');
-    check(boundary.fips).equals('071');
+    // Every county in the country reads its outline from the one Census
+    // layer that publishes them all, keyed on the five-digit FIPS code. A
+    // three-digit county code would name a different county in each state.
+    check(
+      captured.url.path,
+    ).endsWith('/TIGERweb/State_County/MapServer/1/query');
+    check(captured.bodyFields['where']!).equals("GEOID='06071'");
+    check(boundary.name).equals('San Bernardino County');
+    check(boundary.fips).equals('06071');
     check(boundary.bounds.north).isCloseTo(35.81, 0.001);
   });
 
@@ -197,53 +204,138 @@ void main() {
 
   test('never requests the redacted San Bernardino owner name', () {
     check(
-      CountySources.sanBernardino.parcelFields,
-    ).not((it) => it.contains('OwnerName'));
+      CountySources.sanBernardino.layers!.parcelFields.contains('OwnerName'),
+    ).isFalse();
   });
 
   test('scopes each configured county to its own snapshot identifier', () {
-    check(CountySources.all).length.equals(58);
+    check(_california).length.equals(58);
     check(CountySources.byId(sanBernardinoCountyId)).isNotNull();
-    check(
-      CountySources.all.map((source) => source.id).toSet(),
-    ).length.equals(58);
+    check(_california.map((source) => source.id).toSet()).length.equals(58);
   });
 
   test('keeps the two shipped county identifiers verbatim', () {
     // County ids scope offline snapshots and cached owner lookups on disk, so
-    // renaming one orphans every row already saved under the old name.
-    check(CountySources.riverside.id).equals('riverside');
-    check(CountySources.sanBernardino.id).equals('san_bernardino');
+    // renaming one orphans every row already saved under the old name. These
+    // gained their `ca_` prefix when the application went national; schema 6
+    // rewrites what an install already had.
+    check(CountySources.riverside.id).equals('ca_riverside');
+    check(CountySources.sanBernardino.id).equals('ca_san_bernardino');
   });
 
   test('gives every California county a source and a distinct FIPS', () {
-    check(
-      CountySources.all.map((source) => source.fips).toSet(),
-    ).length.equals(58);
-    for (final source in CountySources.all) {
+    check(_california.map((source) => source.fips).toSet()).length.equals(58);
+    for (final source in _california) {
       check(source.fips, because: source.id).startsWith('06');
       check(source.fips.length, because: source.id).equals(5);
     }
   });
 
-  test('reads counties without their own service through the state layer', () {
-    final losAngeles = CountySources.byId('los_angeles')!;
+  test('covers every county in the country with a boundary at least', () {
+    // A county outside a state with a parcel fabric still gets its outline,
+    // its catalogues and the national overlay tiers -- what it does not get
+    // is a parcel query that could only ever answer nothing.
+    final harris = CountySources.byFips('48201')!;
 
-    check(losAngeles.displayName).equals('Los Angeles County');
+    check(harris.displayName).equals('Harris County, TX');
+    check(harris.hasParcelCoverage).isFalse();
+    check(harris.layers).isNull();
+    check(harris.isStatewideSourced).isFalse();
+    check(harris.boundaryFilter).equals("GEOID='48201'");
+    check(harris.effectiveBoundaryQuery).equals(CountySources.usCountiesQuery);
+    // The national tier is what stops the layer panel opening empty.
+    check(harris.portals).isNotEmpty();
+  });
+
+  test('tells two counties of the same name in different states apart', () {
+    final california = CountySources.byId('ca_riverside')!;
+    final montana = CountySources.byFips('30075')!;
+
+    check(montana.displayName).endsWith(', MT');
+    check(california.id).not((it) => it.equals(montana.id));
+    check(california.fips).not((it) => it.equals(montana.fips));
+  });
+
+  test('reads counties without their own service through the state layer', () {
+    final losAngeles = CountySources.byId('ca_los_angeles')!;
+    final layers = losAngeles.layers!;
+
+    check(losAngeles.displayName).equals('Los Angeles County, CA');
     check(losAngeles.isStatewideSourced).isTrue();
-    check(losAngeles.countyFilter).equals("FIPS_CODE='06037'");
-    check(losAngeles.boundaryFilter).equals("FIPS='037'");
+    check(losAngeles.hasParcelCoverage).isTrue();
+    check(layers.countyFilter).equals("FIPS_CODE='06037'");
+    check(losAngeles.boundaryFilter).equals("GEOID='06037'");
     check(losAngeles.imageryCatalog).isNull();
     check(losAngeles.ownerSource).isNull();
     // The address layer is the parcel layer read through its centroids.
-    check(losAngeles.addressQuery).equals(losAngeles.parcelQuery);
-    check(losAngeles.addressQueryParameters['returnCentroid']).equals('true');
-    check(losAngeles.uppercaseAddressSearch).isFalse();
+    check(layers.addressQuery).equals(layers.parcelQuery);
+    check(layers.addressQueryParameters['returnCentroid']).equals('true');
+    check(layers.uppercaseAddressSearch).isFalse();
   });
 
   test('keeps the counties with their own services off the state layer', () {
     check(CountySources.riverside.isStatewideSourced).isFalse();
     check(CountySources.sanBernardino.isStatewideSourced).isFalse();
-    check(CountySources.riverside.countyFilter).equals('1=1');
+    check(CountySources.riverside.layers!.countyFilter).equals('1=1');
+  });
+
+  test(
+    'every generated city catalogue is well-formed and inside its county',
+    () {
+      var cities = 0;
+      for (final source in _california) {
+        for (final city in source.cities) {
+          cities++;
+          check(city.portals, because: city.name).isNotEmpty();
+          for (final portal in city.portals) {
+            check(portal.tier, because: portal.root).equals(PortalTier.city);
+            // https wherever the server offers it; a handful of city servers
+            // are still genuinely cleartext-only, and Dart's own client (not
+            // ATS) is what reads them, so http is tolerated rather than lost.
+            final uri = Uri.parse(portal.root);
+            check(
+              uri.isScheme('https') || uri.isScheme('http'),
+              because: portal.root,
+            ).isTrue();
+            check(uri.host, because: portal.root).isNotEmpty();
+          }
+          // The city rectangle must overlap its county's, or the catalogue
+          // could never light up. Overlap rather than containment: a city
+          // boundary can nick past the county extent by a rounding margin.
+          check(
+            city.bounds.intersects(source.extent),
+            because: '${city.name} in ${source.id}',
+          ).isTrue();
+        }
+      }
+      check(cities).isGreaterThan(100);
+    },
+  );
+
+  test('city portals never repeat a county or statewide root', () {
+    final registered = {
+      for (final source in _california)
+        for (final portal in source.portals) portal.root.toLowerCase(),
+    };
+    for (final source in _california) {
+      for (final city in source.cities) {
+        for (final portal in city.portals) {
+          check(
+            registered,
+            because: '${city.name}: ${portal.root}',
+          ).not((it) => it.contains(portal.root.toLowerCase()));
+        }
+      }
+    }
   });
 }
+
+/// Every California county as a configured source.
+///
+/// The application no longer builds all 3,235 counties eagerly -- a session
+/// reads one -- so the tests that assert something about a whole state build
+/// that state's slice themselves.
+final _california = [
+  for (final county in UsGeography.countiesIn('06'))
+    CountySources.forCounty(county),
+];

@@ -17,8 +17,8 @@ void main() {
         countyId: riversideCountyId,
       );
 
-      expect(fromAddress.cacheKey, 'us:ca:riverside:apn:213191035');
-      expect(fromParcel.cacheKey, 'us:ca:riverside:apn:213191035');
+      expect(fromAddress.cacheKey, 'us:ca_riverside:apn:213191035');
+      expect(fromParcel.cacheKey, 'us:ca_riverside:apn:213191035');
     });
 
     test('falls back to the county feature id per subject', () {
@@ -31,8 +31,8 @@ void main() {
         countyId: riversideCountyId,
       );
 
-      expect(address.cacheKey, 'us:ca:riverside:address:16055');
-      expect(parcel.cacheKey, 'us:ca:riverside:parcel:1819');
+      expect(address.cacheKey, 'us:ca_riverside:address:16055');
+      expect(parcel.cacheKey, 'us:ca_riverside:parcel:1819');
     });
 
     test('ignores parcel-number punctuation', () {
@@ -41,7 +41,7 @@ void main() {
         countyId: riversideCountyId,
       );
 
-      expect(dashed.cacheKey, 'us:ca:riverside:apn:213191035');
+      expect(dashed.cacheKey, 'us:ca_riverside:apn:213191035');
     });
 
     test('scopes saved results to one county', () {
@@ -54,7 +54,7 @@ void main() {
         countyId: sanBernardinoCountyId,
       );
 
-      expect(sanBernardino.cacheKey, 'us:ca:san_bernardino:apn:213191035');
+      expect(sanBernardino.cacheKey, 'us:ca_san_bernardino:apn:213191035');
       expect(sanBernardino.cacheKey, isNot(riverside.cacheKey));
     });
   });

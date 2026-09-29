@@ -19,6 +19,7 @@
 library;
 
 import 'package:latlong2/latlong.dart';
+import 'package:riverside_atlas/domain/models/geo_bounds.dart';
 import 'package:riverside_atlas/data/services/arcgis_json.dart';
 import 'package:riverside_atlas/data/services/county_source.dart';
 import 'package:riverside_atlas/domain/models/address.dart';
@@ -147,7 +148,19 @@ LatLng statewideCentroid(Map<String, Object?> feature) {
   final source = centroid.isEmpty
       ? arcGisObject(feature['geometry'])
       : centroid;
-  return LatLng(arcGisDouble(source['y']), arcGisDouble(source['x']));
+  if (source['x'] is num && source['y'] is num) {
+    return LatLng(arcGisDouble(source['y']), arcGisDouble(source['x']));
+  }
+  final rings = arcGisRings(source['rings']);
+  if (rings.isEmpty || rings.every((r) => r.isEmpty)) {
+    throw const FormatException('Parcel has no position or polygon geometry');
+  }
+  // A representative position, not a surveyed address point.
+  final bounds = GeoBounds.enclosing(rings);
+  return LatLng(
+    (bounds.south + bounds.north) / 2,
+    (bounds.west + bounds.east) / 2,
+  );
 }
 
 /// Reads a situs address from a statewide feature, or `null` when none exists.

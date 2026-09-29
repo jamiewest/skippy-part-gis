@@ -92,6 +92,13 @@ final class OverpassAlprService implements AlprCameraRepository {
     if (payload is! Map<String, dynamic> || payload['elements'] is! List) {
       throw const FormatException('Overpass response is invalid.');
     }
+    // Overpass can answer HTTP 200 with partial/empty elements and a runtime
+    // error (for example a timeout). Do not cache that as a successful query.
+    if (payload['remark'] case final String remark when remark.isNotEmpty) {
+      throw const FormatException(
+        'Overpass did not complete the camera query.',
+      );
+    }
 
     final cameras = <String, AlprCamera>{};
     for (final rawElement in payload['elements'] as List) {

@@ -96,8 +96,8 @@ final class OwnerQuery {
   /// The ZIP code.
   final String zipCode;
 
-  /// The parcel number reduced to digits for comparison and cache keys.
-  String get normalizedApn => digitsOnly(apn);
+  /// The parcel number reduced to uppercase letters and digits for comparison and cache keys.
+  String get normalizedApn => normalizeApn(apn);
 
   /// Whether enough street components are present to search by address.
   bool get hasStreetAddress =>
@@ -111,12 +111,17 @@ final class OwnerQuery {
   /// feature identifier, which only ever matches the same subject.
   ///
   /// The format is part of the on-disk cache contract. Changing it orphans
-  /// every row already saved in an installed database.
+  /// every row already saved in an installed database; schema 6 rewrites what
+  /// was saved under the older California-only form.
+  ///
+  /// The state is no longer a separate segment because [countyId] carries it:
+  /// `ca_riverside` says California where the old `ca:riverside` said it
+  /// twice, and a Texas county could not have been spelled at all.
   String get cacheKey {
     final apn = normalizedApn;
     if (apn.isNotEmpty) {
-      return 'us:ca:$countyId:apn:$apn';
+      return 'us:$countyId:apn:$apn';
     }
-    return 'us:ca:$countyId:${subject.name}:$sourceId';
+    return 'us:$countyId:${subject.name}:$sourceId';
   }
 }

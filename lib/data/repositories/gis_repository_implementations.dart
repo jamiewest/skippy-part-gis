@@ -9,6 +9,7 @@ import 'package:riverside_atlas/domain/models/owner_query.dart';
 import 'package:riverside_atlas/domain/models/parcel.dart';
 import 'package:riverside_atlas/domain/models/property_ownership.dart';
 import 'package:riverside_atlas/domain/models/region_boundary.dart';
+import 'package:riverside_atlas/domain/models/situs_address.dart';
 import 'package:riverside_atlas/domain/repositories/gis_repositories.dart';
 
 /// Live address access backed by the county ArcGIS service.
@@ -250,4 +251,53 @@ final class CachedPropertyOwnerRepository implements PropertyOwnerRepository {
       rethrow;
     }
   }
+}
+
+/// Address access for a county nothing publishes address points for.
+///
+/// Most counties in the United States are in this position: no state fabric
+/// covers them and they publish no address service of their own. Returning
+/// nothing rather than throwing is deliberate. An unreachable service is an
+/// error worth reporting once; a county with no source at all is a standing
+/// fact about coverage, and raising it on every pan would bury the map in a
+/// failure that is never going to clear. The workspace reports the absence
+/// through [CountySource.hasParcelCoverage] instead.
+final class EmptyAddressRepository implements AddressRepository {
+  /// Creates an address repository that finds nothing.
+  const EmptyAddressRepository();
+
+  @override
+  Future<List<Address>> queryViewport(GeoBounds bounds, {int limit = 2000}) =>
+      Future.value(const []);
+
+  @override
+  Future<List<Address>> search(String query, {int limit = 20}) =>
+      Future.value(const []);
+}
+
+/// Parcel access for a county nothing publishes parcels for.
+///
+/// See [EmptyAddressRepository] for why this is empty rather than an error.
+final class EmptyParcelRepository implements ParcelRepository {
+  /// Creates a parcel repository that finds nothing.
+  const EmptyParcelRepository();
+
+  @override
+  Future<List<Parcel>> queryViewport(GeoBounds bounds, {int limit = 2000}) =>
+      Future.value(const []);
+
+  @override
+  Future<Parcel?> hitTest(LatLng point) => Future.value();
+}
+
+/// Situs access for a county with no source that can resolve one.
+///
+/// Returns `null`, meaning "no address on record here", rather than throwing,
+/// which the interface reserves for a source that could not be reached.
+final class UnavailableSitusRepository implements SitusAddressRepository {
+  /// Creates a situs repository that resolves nothing.
+  const UnavailableSitusRepository();
+
+  @override
+  Future<SitusAddress?> lookupAt(LatLng point) => Future.value();
 }

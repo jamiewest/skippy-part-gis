@@ -68,8 +68,10 @@ void main() {
     check(address.houseNumber).equals(535);
     check(address.streetName).equals('PIERCE');
     check(address.streetType).equals('ST');
-    check(address.unit, because: 'the unit is inside SITE_ADDR already')
-        .equals('');
+    check(
+      address.unit,
+      because: 'the unit is inside SITE_ADDR already',
+    ).equals('');
     check(address.city).equals('ALBANY');
     check(address.zipCode).equals('94706');
     check(address.apn).equals('66-2763-16');
@@ -104,9 +106,7 @@ void main() {
 
     check(address.streetName).equals('W RIALTO');
     check(address.unit).equals('');
-    check(
-      address.displayAddress,
-    ).equals('1364 W RIALTO AVE, RIALTO, CA 92376');
+    check(address.displayAddress).equals('1364 W RIALTO AVE, RIALTO, CA 92376');
   });
 
   test('leaves land use and acreage empty rather than deriving them', () {
@@ -176,9 +176,7 @@ void main() {
       captured.bodyFields['geometry']!,
     ).equals('{"x":-117.3968,"y":34.0941}');
     check(situs).isNotNull();
-    check(
-      situs!.fullAddress,
-    ).equals('300 S CEDAR AVE, RIALTO, CA 92376');
+    check(situs!.fullAddress).equals('300 S CEDAR AVE, RIALTO, CA 92376');
   });
 
   test('answers a repeated situs lookup without a second request', () async {
@@ -207,7 +205,7 @@ void main() {
       captured = request;
       return http.Response(jsonEncode({'features': const []}), 200);
     });
-    final losAngeles = CountySources.byId('los_angeles')!;
+    final losAngeles = CountySources.byId('ca_los_angeles')!;
 
     await ArcGisService(
       client,
@@ -230,7 +228,7 @@ void main() {
       captured = request;
       return http.Response(jsonEncode({'features': const []}), 200);
     });
-    final losAngeles = CountySources.byId('los_angeles')!;
+    final losAngeles = CountySources.byId('ca_los_angeles')!;
 
     await ArcGisService(
       client,
@@ -266,7 +264,7 @@ void main() {
         200,
       );
     });
-    final losAngeles = CountySources.byId('los_angeles')!;
+    final losAngeles = CountySources.byId('ca_los_angeles')!;
 
     final page = await ArcGisService(
       client,
@@ -307,28 +305,31 @@ void main() {
     check(situs!.streetAddress).equals('980 9TH ST');
   });
 
-  test('asks a spatial query for enough rows to stay on the fast path', () async {
-    late http.Request captured;
-    final client = MockClient((request) async {
-      captured = request;
-      return http.Response(
-        jsonEncode({
-          'features': List.filled(300, statewideFeature()),
-        }),
-        200,
-      );
-    });
+  test(
+    'asks a spatial query for enough rows to stay on the fast path',
+    () async {
+      late http.Request captured;
+      final client = MockClient((request) async {
+        captured = request;
+        return http.Response(
+          jsonEncode({'features': List.filled(300, statewideFeature())}),
+          200,
+        );
+      });
 
-    final parcels = await ArcGisService(
-      client,
-    ).fetchParcelsInBounds(bounds, limit: 20);
+      final parcels = await ArcGisService(
+        client,
+      ).fetchParcelsInBounds(bounds, limit: 20);
 
-    check(
-      int.parse(captured.bodyFields['resultRecordCount']!),
-    ).equals(ArcGisService.fastPathRecordCount);
-    check(parcels, because: 'the surplus is discarded, not shown').length
-        .equals(20);
-  });
+      check(
+        int.parse(captured.bodyFields['resultRecordCount']!),
+      ).equals(ArcGisService.fastPathRecordCount);
+      check(
+        parcels,
+        because: 'the surplus is discarded, not shown',
+      ).length.equals(20);
+    },
+  );
 
   test('leaves a large spatial request at the size it asked for', () async {
     late http.Request captured;

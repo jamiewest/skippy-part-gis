@@ -19,20 +19,30 @@ final class UnclaimedPropertyQuery {
     required String city,
     required String zipCode,
   }) {
-    final cleanedOwner = ownerName
-        .replaceFirst(RegExp(r'\s+(?:&|AND)\s+.*$', caseSensitive: false), '')
-        .replaceFirst(RegExp(r'\s+ET\s+AL\.?.*$', caseSensitive: false), '')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    final normalizedOwner = ownerName.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final hasBusinessTerm = _businessTerms.any(
+      (term) => RegExp(
+        '(^|[^A-Z])${RegExp.escape(term)}([^A-Z]|\$)',
+      ).hasMatch(normalizedOwner.toUpperCase()),
+    );
+    // Joint individual owners use the first listed person. A business's
+    // conjunctions are part of its name (for example, SMITH & JONES LLC).
+    final cleanedOwner = hasBusinessTerm
+        ? normalizedOwner
+        : normalizedOwner
+              .replaceFirst(
+                RegExp(r'\s+(?:&|AND)\s+.*$', caseSensitive: false),
+                '',
+              )
+              .replaceFirst(
+                RegExp(r'\s+ET\s+AL\.?.*$', caseSensitive: false),
+                '',
+              )
+              .trim();
     final tokens = cleanedOwner
         .split(' ')
         .where((token) => token.isNotEmpty)
         .toList(growable: false);
-    final hasBusinessTerm = _businessTerms.any(
-      (term) => RegExp(
-        '(^|[^A-Z])${RegExp.escape(term)}([^A-Z]|\$)',
-      ).hasMatch(cleanedOwner.toUpperCase()),
-    );
     final looksLikeAssessorPerson =
         tokens.length == 2 ||
         (tokens.length == 3 && tokens.last.replaceAll('.', '').length == 1);

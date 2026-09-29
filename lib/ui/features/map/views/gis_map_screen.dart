@@ -1,3 +1,7 @@
+import 'package:riverside_atlas/ui/features/map/widgets/route_builder_panel.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/route_map_layer.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -5,45 +9,84 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:riverside_atlas/app/theme.dart';
 import 'package:riverside_atlas/data/services/arcgis_image_tile_provider.dart';
-import 'package:riverside_atlas/data/services/california_counties.dart';
 import 'package:riverside_atlas/domain/models/address.dart';
+import 'package:riverside_atlas/domain/models/unclaimed_property_search.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/claimit_search_panel.dart';
 import 'package:riverside_atlas/domain/models/alpr_camera.dart';
+import 'package:riverside_atlas/domain/models/area_selection.dart';
+import 'package:riverside_atlas/domain/models/catalog_layer.dart';
 import 'package:riverside_atlas/domain/models/geo_bounds.dart';
 import 'package:riverside_atlas/domain/models/imagery_layer.dart';
 import 'package:riverside_atlas/domain/models/region_boundary.dart';
 import 'package:riverside_atlas/ui/features/map/property_clipboard_text.dart';
+import 'package:riverside_atlas/ui/features/map/view_models/active_overlay.dart';
 import 'package:riverside_atlas/ui/features/map/view_models/gis_map_view_model.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/area_results_panel.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/area_edit_layer.dart';
+import 'package:riverside_atlas/ui/features/map/view_models/map_assistant.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/area_select_overlay.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/assistant_panel.dart';
 import 'package:riverside_atlas/ui/features/map/widgets/county_menu_button.dart';
 import 'package:riverside_atlas/ui/features/map/widgets/google_search_panel.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/layer_catalog_sheet.dart';
 
+import 'package:riverside_atlas/ui/features/map/widgets/workspace_layout.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/assistant_composer.dart';
+import 'package:riverside_atlas/ui/features/map/widgets/compact_sheet.dart';
+import 'package:riverside_atlas/data/services/content_sharing.dart';
+
+part 'compact_workspace.dart';
+
+/// The width at and above which the workspace shows the full desktop layout:
+/// the control pane, the map, and room for the search panel beside both.
 const _desktopBreakpoint = 940.0;
 
-/// Height of the compact search field that floats over the map.
+/// The height the desktop layout also needs.
 ///
-/// The compact layout stacks the search bar on top of the map, so the map's
-/// own floating overlays are pushed below this to stay tappable. The value is
-/// a deliberate upper bound: it is scaled as if it were a font size, which
-/// overshoots the real height at large text scales so the overlays clear the
-/// search bar rather than creep under it.
-const _compactSearchFieldHeight = 56.0;
+/// Width alone is not enough: a phone held sideways is wider than this
+/// breakpoint and barely 400pt tall, and the desktop pane's stacked header,
+/// search field and scrolling body have nowhere to go on it.
+const _desktopMinHeight = 600.0;
+
+/// The width at and above which the control pane sits beside the map.
+///
+/// This is the narrowest real tablet in portrait (iPad mini, 744pt). Below it
+/// a pane wide enough to read leaves the map narrower than the pane, so the
+/// compact layout — a full-bleed map with its chrome floating over it — is
+/// the better answer.
+const _tabletBreakpoint = 744.0;
+
 const _defaultCenter = LatLng(33.9806, -117.3755);
 
+/// Width of the property card floating over the map.
+const _selectionCardWidth = 360.0;
+
 @immutable
-class _GoogleSearchRequest {
-  const _GoogleSearchRequest({
+class _WebSearchRequest {
+  const _WebSearchRequest({
     required this.query,
     required this.searchSubject,
+    this.claimItQuery,
   });
 
+  final UnclaimedPropertyQuery? claimItQuery;
   final String query;
   final String searchSubject;
 }
 
-Widget _buildGoogleSearchPanel(
-  _GoogleSearchRequest request,
+Widget _buildWebSearchPanel(
+  _WebSearchRequest request,
   GoogleSearchViewBuilder? webViewBuilder,
   VoidCallback onClose,
 ) {
+  if (request.claimItQuery case final query?) {
+    return ClaimItSearchPanel(
+      key: ValueKey(request),
+      query: query,
+      onClose: onClose,
+      webViewBuilder: webViewBuilder,
+    );
+  }
   if (webViewBuilder == null) {
     return GoogleSearchPanel(
       key: ValueKey(request),
@@ -71,6 +114,7 @@ class GisMapScreen extends StatefulWidget {
     this.initialBounds,
     this.enableBaseMap = true,
     this.googleSearchViewBuilder,
+    this.assistant,
     super.key,
   });
 
@@ -98,8 +142,14 @@ class GisMapScreen extends StatefulWidget {
   /// Whether remote raster tiles should be rendered.
   final bool enableBaseMap;
 
-  /// Overrides the embedded Google WebView content, primarily for tests.
+  /// Overrides embedded search content for either provider, primarily for tests.
   final GoogleSearchViewBuilder? googleSearchViewBuilder;
+
+  /// The map assistant, or null to leave the workspace without one.
+  ///
+  /// Opening the panel reserves space beside or below the workspace so map
+  /// controls and drawing gestures remain accessible.
+  final MapAssistant? assistant;
 
   @override
   State<GisMapScreen> createState() => _GisMapScreenState();
@@ -109,7 +159,9 @@ class _GisMapScreenState extends State<GisMapScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
-  _GoogleSearchRequest? _googleSearch;
+  _WebSearchRequest? _webSearch;
+  bool _assistantOpen = false;
+  final AssistantComposer _composer = AssistantComposer();
   CountyOption? _viewportCounty;
 
   /// Tracks which county the map is over so the workspace can offer a switch.
@@ -141,6 +193,7 @@ class _GisMapScreenState extends State<GisMapScreen> {
 
   @override
   void dispose() {
+    _composer.dispose();
     _mapController.dispose();
     _searchController.dispose();
     _searchFocus.dispose();
@@ -149,6 +202,83 @@ class _GisMapScreenState extends State<GisMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final assistant = widget.assistant;
+    if (assistant == null) {
+      return _workspace();
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (WorkspaceLayout.isCompact(constraints.biggest)) {
+          return _workspace();
+        }
+        final panelWidth = math.min(400.0, constraints.maxWidth * 0.4);
+        return Stack(
+          children: [
+            Positioned.fill(
+              right: _assistantOpen ? panelWidth : 0,
+              child: _workspace(),
+            ),
+            if (_assistantOpen)
+              Positioned(
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: panelWidth,
+                child: SafeArea(
+                  child: AssistantPanel(
+                    assistant: assistant,
+                    composer: _composer,
+                    onClose: () => setState(() => _assistantOpen = false),
+                  ),
+                ),
+              )
+            else
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: FloatingActionButton.small(
+                  key: const Key('open-assistant-button'),
+                  tooltip: 'Ask about the map',
+                  onPressed: () => setState(() => _assistantOpen = true),
+                  child: const Icon(Icons.auto_awesome_outlined),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _openPhoneAssistant() async {
+    final assistant = widget.assistant;
+    if (assistant == null) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: SafeArea(
+            child: ListenableBuilder(
+              listenable: widget.viewModel,
+              builder: (context, _) => AssistantPanel(
+                assistant: assistant,
+                composer: _composer,
+                compact: true,
+                contextLabel:
+                    widget.viewModel.selectedAddress?.fullAddress ??
+                    widget.viewModel.selectedParcel?.situsAddress ??
+                    (widget.viewModel.areaSelection != null
+                        ? '${widget.viewModel.countyName} · Drawn area'
+                        : '${widget.viewModel.countyName} · Map view'),
+                onClose: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _workspace() {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
@@ -162,7 +292,8 @@ class _GisMapScreenState extends State<GisMapScreen> {
           builder: (context, _) {
             return LayoutBuilder(
               builder: (context, constraints) {
-                if (constraints.maxWidth >= _desktopBreakpoint) {
+                if (constraints.maxWidth >= _desktopBreakpoint &&
+                    constraints.maxHeight >= _desktopMinHeight) {
                   return _DesktopWorkspace(
                     viewModel: widget.viewModel,
                     countySelection: widget.countySelection,
@@ -175,13 +306,40 @@ class _GisMapScreenState extends State<GisMapScreen> {
                     searchFocus: _searchFocus,
                     onAddressSelected: _selectAddress,
                     enableBaseMap: widget.enableBaseMap,
-                    googleSearch: _googleSearch,
+                    webSearch: _webSearch,
                     googleSearchViewBuilder: widget.googleSearchViewBuilder,
-                    onGoogleSearch: _openGoogleSearch,
-                    onCloseGoogleSearch: _closeGoogleSearch,
+                    onWebSearch: _openWebSearch,
+                    onCloseWebSearch: _closeWebSearch,
                   );
                 }
+                if (constraints.maxWidth >= _tabletBreakpoint &&
+                    constraints.maxHeight >= _desktopMinHeight) {
+                  return _TabletWorkspace(
+                    viewModel: widget.viewModel,
+                    countySelection: widget.countySelection,
+                    initialCenter: widget.initialCenter,
+                    initialBounds: widget.initialBounds,
+                    viewportCounty: _viewportCounty,
+                    onCenterChanged: _handleCenterChanged,
+                    mapController: _mapController,
+                    searchController: _searchController,
+                    searchFocus: _searchFocus,
+                    onAddressSelected: _selectAddress,
+                    enableBaseMap: widget.enableBaseMap,
+                    webSearch: _webSearch,
+                    googleSearchViewBuilder: widget.googleSearchViewBuilder,
+                    onWebSearch: _openWebSearch,
+                    onCloseWebSearch: _closeWebSearch,
+                  );
+                }
+                // A narrow workspace on a large screen is one sharing the
+                // screen with docked chat, which is already open.
                 return _CompactWorkspace(
+                  onAssistant:
+                      widget.assistant == null ||
+                          !WorkspaceLayout.compactOf(context)
+                      ? null
+                      : _openPhoneAssistant,
                   viewModel: widget.viewModel,
                   countySelection: widget.countySelection,
                   initialCenter: widget.initialCenter,
@@ -193,10 +351,10 @@ class _GisMapScreenState extends State<GisMapScreen> {
                   searchFocus: _searchFocus,
                   onAddressSelected: _selectAddress,
                   enableBaseMap: widget.enableBaseMap,
-                  googleSearch: _googleSearch,
+                  webSearch: _webSearch,
                   googleSearchViewBuilder: widget.googleSearchViewBuilder,
-                  onGoogleSearch: _openGoogleSearch,
-                  onCloseGoogleSearch: _closeGoogleSearch,
+                  onWebSearch: _openWebSearch,
+                  onCloseWebSearch: _closeWebSearch,
                 );
               },
             );
@@ -216,17 +374,26 @@ class _GisMapScreenState extends State<GisMapScreen> {
     _searchFocus.unfocus();
   }
 
-  void _openGoogleSearch(_GoogleSearchRequest request) {
-    setState(() => _googleSearch = request);
+  void _openWebSearch(_WebSearchRequest request) {
+    setState(() => _webSearch = request);
   }
 
-  void _closeGoogleSearch() {
-    setState(() => _googleSearch = null);
+  void _closeWebSearch() {
+    setState(() => _webSearch = null);
   }
 
   void _handleEscape() {
-    if (_googleSearch != null) {
-      _closeGoogleSearch();
+    final routing = widget.viewModel.routing;
+    if (routing != null && (routing.panelOpen || routing.pickingStop != null)) {
+      routing.showPanel(false);
+      return;
+    }
+    if (_webSearch != null) {
+      _closeWebSearch();
+      return;
+    }
+    if (widget.viewModel.areaSelectMode) {
+      widget.viewModel.setAreaSelectMode(false);
       return;
     }
     widget.viewModel.clearSelection();
@@ -246,10 +413,10 @@ class _DesktopWorkspace extends StatelessWidget {
     required this.searchFocus,
     required this.onAddressSelected,
     required this.enableBaseMap,
-    required this.googleSearch,
+    required this.webSearch,
     required this.googleSearchViewBuilder,
-    required this.onGoogleSearch,
-    required this.onCloseGoogleSearch,
+    required this.onWebSearch,
+    required this.onCloseWebSearch,
   });
 
   final GisMapViewModel viewModel;
@@ -263,16 +430,17 @@ class _DesktopWorkspace extends StatelessWidget {
   final FocusNode searchFocus;
   final ValueChanged<Address> onAddressSelected;
   final bool enableBaseMap;
-  final _GoogleSearchRequest? googleSearch;
+  final _WebSearchRequest? webSearch;
   final GoogleSearchViewBuilder? googleSearchViewBuilder;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
-  final VoidCallback onCloseGoogleSearch;
+  final ValueChanged<_WebSearchRequest> onWebSearch;
+  final VoidCallback onCloseWebSearch;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final panelWidth = ((constraints.maxWidth - 380) * 0.55).clamp(
+        final paneWidth = (constraints.maxWidth * 0.28).clamp(380.0, 440.0);
+        final panelWidth = ((constraints.maxWidth - paneWidth) * 0.55).clamp(
           320.0,
           480.0,
         );
@@ -281,14 +449,13 @@ class _DesktopWorkspace extends StatelessWidget {
             child: Row(
               children: [
                 SizedBox(
-                  width: 380,
+                  width: paneWidth,
                   child: _ControlPane(
                     viewModel: viewModel,
                     countySelection: countySelection,
                     searchController: searchController,
                     searchFocus: searchFocus,
                     onAddressSelected: onAddressSelected,
-                    onGoogleSearch: onGoogleSearch,
                   ),
                 ),
                 VerticalDivider(
@@ -305,6 +472,8 @@ class _DesktopWorkspace extends StatelessWidget {
                     viewportCounty: viewportCounty,
                     onCenterChanged: onCenterChanged,
                     enableBaseMap: enableBaseMap,
+                    onWebSearch: onWebSearch,
+                    showSelectionCard: true,
                   ),
                 ),
                 ClipRect(
@@ -312,10 +481,10 @@ class _DesktopWorkspace extends StatelessWidget {
                     duration: const Duration(milliseconds: 240),
                     curve: Curves.easeOutCubic,
                     alignment: Alignment.centerRight,
-                    child: googleSearch == null
+                    child: webSearch == null
                         ? const SizedBox.shrink()
                         : Row(
-                            key: ValueKey(googleSearch),
+                            key: ValueKey(webSearch),
                             children: [
                               VerticalDivider(
                                 width: 1,
@@ -325,10 +494,10 @@ class _DesktopWorkspace extends StatelessWidget {
                               ),
                               SizedBox(
                                 width: panelWidth,
-                                child: _buildGoogleSearchPanel(
-                                  googleSearch!,
+                                child: _buildWebSearchPanel(
+                                  webSearch!,
                                   googleSearchViewBuilder,
-                                  onCloseGoogleSearch,
+                                  onCloseWebSearch,
                                 ),
                               ),
                             ],
@@ -344,8 +513,13 @@ class _DesktopWorkspace extends StatelessWidget {
   }
 }
 
-class _CompactWorkspace extends StatelessWidget {
-  const _CompactWorkspace({
+/// The layout for tablets and for phones held sideways.
+///
+/// Wide enough for the control pane beside the map, but not wide enough to
+/// also give the search panel a column of its own: it arrives as a side sheet
+/// over the map instead, so opening it never squeezes the map to a strip.
+class _TabletWorkspace extends StatelessWidget {
+  const _TabletWorkspace({
     required this.viewModel,
     required this.countySelection,
     required this.initialCenter,
@@ -357,10 +531,10 @@ class _CompactWorkspace extends StatelessWidget {
     required this.searchFocus,
     required this.onAddressSelected,
     required this.enableBaseMap,
-    required this.googleSearch,
+    required this.webSearch,
     required this.googleSearchViewBuilder,
-    required this.onGoogleSearch,
-    required this.onCloseGoogleSearch,
+    required this.onWebSearch,
+    required this.onCloseWebSearch,
   });
 
   final GisMapViewModel viewModel;
@@ -374,145 +548,153 @@ class _CompactWorkspace extends StatelessWidget {
   final FocusNode searchFocus;
   final ValueChanged<Address> onAddressSelected;
   final bool enableBaseMap;
-  final _GoogleSearchRequest? googleSearch;
+  final _WebSearchRequest? webSearch;
   final GoogleSearchViewBuilder? googleSearchViewBuilder;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
-  final VoidCallback onCloseGoogleSearch;
+  final ValueChanged<_WebSearchRequest> onWebSearch;
+  final VoidCallback onCloseWebSearch;
 
   @override
   Widget build(BuildContext context) {
-    final safePadding = MediaQuery.paddingOf(context);
-    final googlePanelWidth = (MediaQuery.sizeOf(context).width * 0.92).clamp(
-      0.0,
-      560.0,
-    );
-    final searchBarBottom =
-        safePadding.top +
-        12 +
-        MediaQuery.textScalerOf(context).scale(_compactSearchFieldHeight);
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: _MapSurface(
-              viewModel: viewModel,
-              mapController: mapController,
-              initialCenter: initialCenter,
-              initialBounds: initialBounds,
-              countySelection: countySelection,
-              viewportCounty: viewportCounty,
-              onCenterChanged: onCenterChanged,
-              enableBaseMap: enableBaseMap,
-              overlayPadding: EdgeInsets.only(top: searchBarBottom),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            top: safePadding.top + 12,
-            child: Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Narrower than the desktop pane, but not so narrow that the layer
+        // rows wrap to four lines each; the map keeps the majority of the
+        // width at every tablet size either way.
+        final paneWidth = (constraints.maxWidth * 0.44).clamp(320.0, 380.0);
+        final panelWidth = (constraints.maxWidth * 0.62).clamp(320.0, 560.0);
+        return Scaffold(
+          body: SafeArea(
+            child: Stack(
               children: [
-                _SearchField(
-                  controller: searchController,
-                  focusNode: searchFocus,
-                  viewModel: viewModel,
+                Row(
+                  children: [
+                    SizedBox(
+                      width: paneWidth,
+                      child: _ControlPane(
+                        viewModel: viewModel,
+                        countySelection: countySelection,
+                        searchController: searchController,
+                        searchFocus: searchFocus,
+                        onAddressSelected: onAddressSelected,
+                        // A phone on its side is this wide and half as tall;
+                        // the pane's header gives up its padding so the list
+                        // underneath keeps its rows.
+                        dense: constraints.maxHeight < _desktopMinHeight,
+                      ),
+                    ),
+                    VerticalDivider(
+                      width: 1,
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                    Expanded(
+                      child: _MapSurface(
+                        viewModel: viewModel,
+                        mapController: mapController,
+                        initialCenter: initialCenter,
+                        initialBounds: initialBounds,
+                        countySelection: countySelection,
+                        viewportCounty: viewportCounty,
+                        onCenterChanged: onCenterChanged,
+                        enableBaseMap: enableBaseMap,
+                        onWebSearch: onWebSearch,
+                        showSelectionCard: true,
+                      ),
+                    ),
+                  ],
                 ),
-                if (viewModel.searchResults.isNotEmpty)
-                  _FloatingSearchResults(
-                    results: viewModel.searchResults,
-                    onSelected: onAddressSelected,
+                Positioned.fill(
+                  child: _WebSearchSideSheet(
+                    request: webSearch,
+                    viewBuilder: googleSearchViewBuilder,
+                    onClose: onCloseWebSearch,
+                    width: panelWidth,
                   ),
+                ),
               ],
             ),
           ),
-          Positioned(
-            left: 16,
-            bottom: safePadding.bottom + 20,
-            child: _CompactLayerBar(
-              viewModel: viewModel,
-              onOpenTools: () => _showTools(context),
-            ),
-          ),
-          if (viewModel.selectedAddress != null ||
-              viewModel.selectedParcel != null)
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: safePadding.bottom + 84,
-              child: _SelectionCard(
-                viewModel: viewModel,
-                onGoogleSearch: onGoogleSearch,
+        );
+      },
+    );
+  }
+}
+
+/// The search panel as a sheet sliding in over the map.
+///
+/// The layouts too narrow to give the panel a column of its own share this:
+/// it dims what is behind it, closes on a tap outside, and takes no layout
+/// width, so the map keeps the size it had before the panel opened.
+class _WebSearchSideSheet extends StatelessWidget {
+  const _WebSearchSideSheet({
+    required this.request,
+    required this.viewBuilder,
+    required this.onClose,
+    required this.width,
+  });
+
+  /// The search to show, or null when the sheet is closed.
+  final _WebSearchRequest? request;
+
+  final GoogleSearchViewBuilder? viewBuilder;
+  final VoidCallback onClose;
+
+  /// How wide the sheet is when open.
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: IgnorePointer(
+            ignoring: request == null,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 180),
+              opacity: request == null ? 0 : 1,
+              child: ColoredBox(
+                color: Colors.black.withValues(alpha: 0.28),
+                child: GestureDetector(onTap: onClose),
               ),
             ),
-          Positioned.fill(
-            child: IgnorePointer(
-              ignoring: googleSearch == null,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 180),
-                opacity: googleSearch == null ? 0 : 1,
-                child: ColoredBox(
-                  color: Colors.black.withValues(alpha: 0.28),
-                  child: GestureDetector(onTap: onCloseGoogleSearch),
-                ),
-              ),
-            ),
           ),
-          Positioned.fill(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 240),
-              transitionBuilder: (child, animation) => SlideTransition(
-                position:
-                    Tween<Offset>(
-                      begin: const Offset(1, 0),
-                      end: Offset.zero,
-                    ).animate(
-                      CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.easeOutCubic,
-                        reverseCurve: Curves.easeInCubic,
-                      ),
+        ),
+        Positioned.fill(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 240),
+            transitionBuilder: (child, animation) => SlideTransition(
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                      reverseCurve: Curves.easeInCubic,
                     ),
-                child: child,
-              ),
-              child: googleSearch == null
-                  ? const SizedBox.shrink()
-                  : Align(
-                      key: ValueKey(googleSearch),
-                      alignment: Alignment.centerRight,
-                      child: SafeArea(
-                        left: false,
-                        child: SizedBox(
-                          width: googlePanelWidth,
-                          child: _buildGoogleSearchPanel(
-                            googleSearch!,
-                            googleSearchViewBuilder,
-                            onCloseGoogleSearch,
-                          ),
+                  ),
+              child: child,
+            ),
+            child: request == null
+                ? const SizedBox.shrink()
+                : Align(
+                    key: ValueKey(request),
+                    alignment: Alignment.centerRight,
+                    child: SafeArea(
+                      left: false,
+                      child: SizedBox(
+                        width: width,
+                        child: _buildWebSearchPanel(
+                          request!,
+                          viewBuilder,
+                          onClose,
                         ),
                       ),
                     ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTools(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) => ListenableBuilder(
-        listenable: viewModel,
-        builder: (context, _) => FractionallySizedBox(
-          heightFactor: 0.76,
-          child: _ToolsContent(
-            viewModel: viewModel,
-            countySelection: countySelection,
+                  ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -524,7 +706,7 @@ class _ControlPane extends StatelessWidget {
     required this.searchController,
     required this.searchFocus,
     required this.onAddressSelected,
-    required this.onGoogleSearch,
+    this.dense = false,
   });
 
   final GisMapViewModel viewModel;
@@ -532,7 +714,13 @@ class _ControlPane extends StatelessWidget {
   final TextEditingController searchController;
   final FocusNode searchFocus;
   final ValueChanged<Address> onAddressSelected;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
+
+  /// Whether the pane is short enough that its header has to earn its height.
+  ///
+  /// A phone held sideways is barely 400pt tall: the wordmark is the first
+  /// thing to go, because the county menu and the search field under it are
+  /// what the pane is for.
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -543,12 +731,15 @@ class _ControlPane extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+            padding: dense
+                ? const EdgeInsets.fromLTRB(20, 10, 20, 8)
+                : const EdgeInsets.fromLTRB(24, 24, 24, 12),
             child: _BrandHeader(
               mode: viewModel.mode,
               countyName: viewModel.countyName,
               countySelection: countySelection,
               canSwitchCounty: !viewModel.snapshotStatus.isImporting,
+              dense: dense,
             ),
           ),
           Padding(
@@ -564,14 +755,19 @@ class _ControlPane extends StatelessWidget {
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 220),
               child: _PaneBody(
+                // Keyed by the rectangle itself, not by whether there is one,
+                // so a second area drawn while the first is listed replaces
+                // the list rather than pouring new rows into it at the old
+                // scroll position.
                 key: ValueKey((
                   viewModel.searchResults.isNotEmpty,
-                  viewModel.selectedAddress?.sourceId,
-                  viewModel.selectedParcel?.sourceId,
+                  viewModel.areaSelection?.bounds.west,
+                  viewModel.areaSelection?.bounds.south,
+                  viewModel.areaSelection?.bounds.east,
+                  viewModel.areaSelection?.bounds.north,
                 )),
                 viewModel: viewModel,
                 onAddressSelected: onAddressSelected,
-                onGoogleSearch: onGoogleSearch,
               ),
             ),
           ),
@@ -587,6 +783,7 @@ class _BrandHeader extends StatelessWidget {
     required this.countyName,
     required this.countySelection,
     required this.canSwitchCounty,
+    this.dense = false,
   });
 
   final DataMode mode;
@@ -594,31 +791,36 @@ class _BrandHeader extends StatelessWidget {
   final CountySelection? countySelection;
   final bool canSwitchCounty;
 
+  /// Whether to drop the mark and the wordmark for want of vertical room.
+  final bool dense;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: ShapeDecoration(
-            color: theme.colorScheme.primaryContainer,
-            shape: const RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
+        if (!dense) ...[
+          Container(
+            width: 48,
+            height: 48,
+            decoration: ShapeDecoration(
+              color: theme.colorScheme.primaryContainer,
+              shape: const RoundedSuperellipseBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+            ),
+            child: Icon(
+              Icons.map_outlined,
+              color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
-          child: Icon(
-            Icons.map_outlined,
-            color: theme.colorScheme.onPrimaryContainer,
-          ),
-        ),
-        const SizedBox(width: 14),
+          const SizedBox(width: 14),
+        ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Riverside Atlas', style: theme.textTheme.titleLarge),
+              if (!dense) Text('Atlas', style: theme.textTheme.titleLarge),
               if (countySelection case final selection?)
                 Align(
                   alignment: Alignment.centerLeft,
@@ -669,6 +871,10 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ⌘K is offered only where there is a keyboard to press it on. On a
+    // touch platform it would be a hint about a shortcut that does not exist,
+    // taking the space where the clear button appears once there is text.
+    final showShortcutHint = Theme.of(context).platform == TargetPlatform.macOS;
     return Material(
       elevation: 3,
       shadowColor: Colors.black.withValues(alpha: 0.12),
@@ -692,10 +898,12 @@ class _SearchField extends StatelessWidget {
                   ),
                 )
               : controller.text.isEmpty
-              ? Tooltip(
-                  message: 'Press ⌘K to search',
-                  child: const Icon(Icons.keyboard_command_key, size: 18),
-                )
+              ? (showShortcutHint
+                    ? Tooltip(
+                        message: 'Press ⌘K to search',
+                        child: const Icon(Icons.keyboard_command_key, size: 18),
+                      )
+                    : null)
               : IconButton(
                   tooltip: 'Clear search',
                   onPressed: () {
@@ -715,29 +923,30 @@ class _PaneBody extends StatelessWidget {
   const _PaneBody({
     required this.viewModel,
     required this.onAddressSelected,
-    required this.onGoogleSearch,
     super.key,
   });
 
   final GisMapViewModel viewModel;
   final ValueChanged<Address> onAddressSelected;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
 
   @override
   Widget build(BuildContext context) {
     if (viewModel.searchResults.isNotEmpty) {
       return _SearchResults(
         results: viewModel.searchResults,
+        stateCode: viewModel.stateCode,
         onSelected: onAddressSelected,
       );
     }
-    if (viewModel.selectedAddress != null || viewModel.selectedParcel != null) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-        child: _SelectionCard(
-          viewModel: viewModel,
-          onGoogleSearch: onGoogleSearch,
-        ),
+    // The selected property is no longer shown here: it floats over the map
+    // beside the parcel it describes. The pane carries the drawn area's
+    // address list instead, which is a list and belongs in a list-shaped
+    // space.
+    if (viewModel.areaSelection case final selection?) {
+      return AreaResultsPanel(
+        viewModel: viewModel,
+        selection: selection,
+        onAddressSelected: onAddressSelected,
       );
     }
     return _ToolsContent(viewModel: viewModel);
@@ -745,7 +954,12 @@ class _PaneBody extends StatelessWidget {
 }
 
 class _SearchResults extends StatelessWidget {
-  const _SearchResults({required this.results, required this.onSelected});
+  const _SearchResults({
+    required this.results,
+    required this.onSelected,
+    required this.stateCode,
+  });
+  final String stateCode;
 
   final List<Address> results;
   final ValueChanged<Address> onSelected;
@@ -776,7 +990,9 @@ class _SearchResults extends StatelessWidget {
                     child: Icon(Icons.home_work_outlined),
                   ),
                   title: Text(address.fullAddress),
-                  subtitle: Text('${address.city}, CA ${address.zipCode}'),
+                  subtitle: Text(
+                    '${address.city}, $stateCode ${address.zipCode}',
+                  ),
                   trailing: const Icon(Icons.arrow_outward),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -792,65 +1008,16 @@ class _SearchResults extends StatelessWidget {
   }
 }
 
-class _FloatingSearchResults extends StatelessWidget {
-  const _FloatingSearchResults({
-    required this.results,
-    required this.onSelected,
-  });
-
-  final List<Address> results;
-  final ValueChanged<Address> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      margin: const EdgeInsets.only(top: 8),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 300),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: results.length,
-          itemBuilder: (context, index) {
-            final address = results[index];
-            return ListTile(
-              title: Text(address.fullAddress),
-              subtitle: Text('${address.city}, CA ${address.zipCode}'),
-              onTap: () => onSelected(address),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
 class _ToolsContent extends StatelessWidget {
-  const _ToolsContent({required this.viewModel, this.countySelection});
+  const _ToolsContent({required this.viewModel});
 
   final GisMapViewModel viewModel;
-  final CountySelection? countySelection;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       children: [
-        if (countySelection case final selection?) ...[
-          _SectionLabel(label: 'COUNTY', icon: Icons.location_on_outlined),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CountyMenuButton(
-              selection: selection,
-              enabled: !viewModel.snapshotStatus.isImporting,
-              disabledTooltip:
-                  'Finish or pause the snapshot download before changing '
-                  'county.',
-            ),
-          ),
-          const SizedBox(height: 24),
-        ],
         _SectionLabel(label: 'DATA SOURCE', icon: Icons.storage_outlined),
         const SizedBox(height: 10),
         SizedBox(
@@ -877,7 +1044,19 @@ class _ToolsContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         _SectionLabel(label: 'MAP LAYERS', icon: Icons.layers_outlined),
+        if (viewModel.parcelSourceLabel != null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: viewModel.forgetParcelSource,
+              child: const Text('Forget parcel source'),
+            ),
+          ),
         const SizedBox(height: 10),
+        if (viewModel.coverageMessage case final message?) ...[
+          _CoverageNotice(message: message),
+          const SizedBox(height: 10),
+        ],
         Card(
           child: Column(
             children: [
@@ -885,18 +1064,30 @@ class _ToolsContent extends StatelessWidget {
                 key: const Key('address-layer-switch'),
                 icon: Icons.home_work_outlined,
                 title: 'Address points',
-                subtitle: 'Select a marker to inspect its address',
+                subtitle: viewModel.parcelsAvailable
+                    ? (viewModel.parcelSourceLabel == null
+                          ? 'Select a marker to inspect its address'
+                          : 'From ${viewModel.parcelSourceLabel}')
+                    : 'No public address layer covers this county',
                 value: viewModel.addressesVisible,
-                onChanged: viewModel.setAddressesVisible,
+                onChanged: viewModel.parcelsAvailable
+                    ? viewModel.setAddressesVisible
+                    : null,
               ),
               const Divider(height: 1, indent: 58),
               _LayerSwitch(
                 key: const Key('parcel-layer-switch'),
                 icon: Icons.grid_4x4_outlined,
                 title: 'Parcel boundaries',
-                subtitle: 'Property facts from the assessor layer',
+                subtitle: viewModel.parcelsAvailable
+                    ? (viewModel.parcelSourceLabel == null
+                          ? 'Property facts from the assessor layer'
+                          : 'From ${viewModel.parcelSourceLabel}')
+                    : 'No public parcel layer covers this county',
                 value: viewModel.parcelsVisible,
-                onChanged: viewModel.setParcelsVisible,
+                onChanged: viewModel.parcelsAvailable
+                    ? viewModel.setParcelsVisible
+                    : null,
               ),
               const Divider(height: 1, indent: 58),
               _LayerSwitch(
@@ -923,6 +1114,15 @@ class _ToolsContent extends StatelessWidget {
             ],
           ),
         ),
+        if (viewModel.portals.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          _SectionLabel(
+            label: 'COUNTY MAP LAYERS',
+            icon: Icons.layers_outlined,
+          ),
+          const SizedBox(height: 10),
+          _CatalogCard(viewModel: viewModel),
+        ],
         if (viewModel.imageryAvailable) ...[
           const SizedBox(height: 24),
           _SectionLabel(
@@ -932,13 +1132,156 @@ class _ToolsContent extends StatelessWidget {
           const SizedBox(height: 10),
           _ImageryCard(viewModel: viewModel),
         ],
-        const SizedBox(height: 24),
-        _SectionLabel(label: 'OFFLINE SNAPSHOT', icon: Icons.download_outlined),
-        const SizedBox(height: 10),
-        _SnapshotCard(viewModel: viewModel),
+        if (viewModel.parcelsAvailable) ...[
+          const SizedBox(height: 24),
+          _SectionLabel(
+            label: 'OFFLINE SNAPSHOT',
+            icon: Icons.download_outlined,
+          ),
+          const SizedBox(height: 10),
+          _SnapshotCard(viewModel: viewModel),
+        ],
         const SizedBox(height: 20),
         _SourceNotice(countyName: viewModel.countyName),
       ],
+    );
+  }
+}
+
+/// One line describing what the catalogue holds and how it was found.
+///
+/// The old wording called every wide-area catalogue "statewide", which was
+/// never true of the National Weather Service and is misleading in the 49
+/// states with no state tier at all. It also could not say that a search was
+/// still running, so a county outside the inventoried state read as having
+/// nothing rather than as not having looked yet.
+String _catalogSummary(
+  GisMapViewModel viewModel,
+  int localCount,
+  int wideCount,
+) {
+  if (!viewModel.overlaysAvailable) {
+    return 'Live mode only; not stored in snapshots';
+  }
+  final wide = '$wideCount state and federal';
+  if (localCount > 0) {
+    return '$localCount local and $wide catalogues';
+  }
+  // "None published locally" is a claim, and it is only true once something
+  // has looked. Before that the honest line is that the search has not
+  // finished, which is also what the user sees for the first second.
+  return switch (viewModel.discoveryStatus) {
+    PortalDiscoveryStatus.idle when viewModel.discoveryAvailable =>
+      'Looking for local catalogues\u2026',
+    PortalDiscoveryStatus.searching => 'Looking for local catalogues\u2026',
+    PortalDiscoveryStatus.unavailable =>
+      '$wide catalogues; local search unavailable',
+    _ => '$wide catalogues; none published locally',
+  };
+}
+
+/// Entry point to everything the county's catalogues publish.
+///
+/// The catalogue itself is a sheet rather than another section of this pane:
+/// a county publishes hundreds of services, and the control pane is for the
+/// handful of layers the app understands.
+class _CatalogCard extends StatefulWidget {
+  const _CatalogCard({required this.viewModel});
+
+  final GisMapViewModel viewModel;
+
+  @override
+  State<_CatalogCard> createState() => _CatalogCardState();
+}
+
+class _CatalogCardState extends State<_CatalogCard> {
+  @override
+  void initState() {
+    super.initState();
+    _discover();
+  }
+
+  @override
+  void didUpdateWidget(_CatalogCard old) {
+    super.didUpdateWidget(old);
+    // Switching county replaces the view model but not this widget, so
+    // Flutter reuses this State and [initState] does not run again. Without
+    // this, every county after the first would report only its federal tier.
+    if (!identical(old.viewModel, widget.viewModel)) {
+      _discover();
+    }
+  }
+
+  /// Asks what else publishes here, once the current frame is done.
+  ///
+  /// The pane says how many catalogues this county has, so it has to ask
+  /// before the user opens anything — otherwise every county outside the
+  /// inventoried state reads as having only the federal tier until the sheet
+  /// is opened. Deferred past the frame because discovery notifies listeners.
+  void _discover() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.viewModel.discoverPortals();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = widget.viewModel;
+    final theme = Theme.of(context);
+    final active = viewModel.activeOverlays;
+    final local = viewModel.portals.where((portal) => !portal.isWideArea);
+    final localCount = local.length;
+    final wideCount = viewModel.portals.length - localCount;
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            key: const Key('open-layer-catalog'),
+            leading: const Icon(Icons.travel_explore_outlined),
+            title: Text(
+              active.isEmpty
+                  ? 'Browse published layers'
+                  : '${active.length} on',
+            ),
+            subtitle: Text(_catalogSummary(viewModel, localCount, wideCount)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              showDragHandle: true,
+              builder: (context) => FractionallySizedBox(
+                heightFactor: 0.9,
+                child: LayerCatalogSheet(viewModel: viewModel),
+              ),
+            ),
+          ),
+          if (active.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final overlay in active)
+                    InputChip(
+                      avatar: Icon(
+                        Icons.circle,
+                        size: 12,
+                        color: overlay.color,
+                      ),
+                      label: Text(
+                        overlay.service.title,
+                        style: theme.textTheme.labelSmall,
+                      ),
+                      onDeleted: () => viewModel.toggleOverlay(overlay.service),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -1212,6 +1555,50 @@ class _SnapshotCard extends StatelessWidget {
   }
 }
 
+/// Says why a county's parcel and address controls are switched off.
+///
+/// There is no national parcel layer. Most counties in the country are
+/// covered by neither a state fabric nor a service of their own, and a map
+/// that simply drew nothing would read as broken rather than as empty. What
+/// still works is said alongside what does not, because the boundary, the
+/// catalogues and every overlay tier are the reason to stay on this county.
+class _CoverageNotice extends StatelessWidget {
+  const _CoverageNotice({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      key: const Key('coverage-notice'),
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SourceNotice extends StatelessWidget {
   const _SourceNotice({required this.countyName});
 
@@ -1249,10 +1636,16 @@ String _searchableAddress(String street, String location) =>
     location.isEmpty ? street : '$street, $location';
 
 class _SelectionCard extends StatelessWidget {
-  const _SelectionCard({required this.viewModel, required this.onGoogleSearch});
+  const _SelectionCard({
+    required this.viewModel,
+    required this.onWebSearch,
+    this.compact = false,
+  });
+
+  final bool compact;
 
   final GisMapViewModel viewModel;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
+  final ValueChanged<_WebSearchRequest> onWebSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -1261,16 +1654,26 @@ class _SelectionCard extends StatelessWidget {
     final addressQuery = switch ((address, parcel)) {
       (final address?, _) => _searchableAddress(
         address.fullAddress,
-        propertyLocationLine(city: address.city, zipCode: address.zipCode),
+        propertyLocationLine(
+          stateCode: viewModel.stateCode,
+          city: address.city,
+          zipCode: address.zipCode,
+        ),
       ),
       (_, final parcel?) when parcel.situsAddress.isNotEmpty =>
         _searchableAddress(
           parcel.situsAddress,
-          propertyLocationLine(city: parcel.city, zipCode: parcel.zipCode),
+          propertyLocationLine(
+            stateCode: viewModel.stateCode,
+            city: parcel.city,
+            zipCode: parcel.zipCode,
+          ),
         ),
       _ => null,
     };
     final clipboardText = propertyClipboardText(
+      parcelSourceLabel: viewModel.parcelSourceLabel,
+      stateCode: viewModel.stateCode,
       countyName: viewModel.countyName,
       address: address,
       parcel: parcel,
@@ -1309,7 +1712,7 @@ class _SelectionCard extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
-                if (clipboardText != null) ...[
+                if (!compact && clipboardText != null) ...[
                   _CopyButton(
                     key: const Key('copy-selection-button'),
                     tooltip: 'Copy all details',
@@ -1319,12 +1722,12 @@ class _SelectionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                 ],
-                if (addressQuery != null) ...[
+                if (!compact && addressQuery != null) ...[
                   _GoogleSearchButton(
                     key: const Key('google-address-search-button'),
                     tooltip: 'Search this address on Google',
-                    onPressed: () => onGoogleSearch(
-                      _GoogleSearchRequest(
+                    onPressed: () => onWebSearch(
+                      _WebSearchRequest(
                         query: addressQuery,
                         searchSubject: 'Address',
                       ),
@@ -1332,22 +1735,64 @@ class _SelectionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                 ],
-                IconButton(
-                  tooltip: 'Close details',
-                  onPressed: viewModel.clearSelection,
-                  icon: const Icon(Icons.close),
-                ),
+                if (!compact)
+                  IconButton(
+                    tooltip: 'Close details',
+                    onPressed: viewModel.clearSelection,
+                    icon: const Icon(Icons.close),
+                  ),
               ],
             ),
+            if (compact) ...[
+              const SizedBox(height: 8),
+              Text(
+                'APN ${parcel?.apn ?? address?.apn ?? "Not provided"}',
+                style: theme.textTheme.bodyMedium,
+              ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (clipboardText != null) ...[
+                    _CopyButton(
+                      key: const Key('copy-selection-button'),
+                      tooltip: 'Copy all details',
+                      text: clipboardText,
+                      confirmation: 'Property details copied',
+                    ),
+                    Builder(
+                      builder: (context) => TextButton.icon(
+                        key: const Key('share-property-button'),
+                        onPressed: () => shareProperty(context, clipboardText),
+                        icon: const Icon(Icons.ios_share),
+                        label: const Text('Share'),
+                      ),
+                    ),
+                  ],
+                  if (addressQuery != null)
+                    TextButton.icon(
+                      key: const Key('google-address-search-button'),
+                      onPressed: () => onWebSearch(
+                        _WebSearchRequest(
+                          query: addressQuery,
+                          searchSubject: 'Address',
+                        ),
+                      ),
+                      icon: const Icon(Icons.travel_explore),
+                      label: const Text('Research'),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
             if (address != null) ...[
-              _LocationDetailRow(city: address.city, zipCode: address.zipCode),
+              _LocationDetailRow(
+                stateCode: viewModel.stateCode,
+                city: address.city,
+                zipCode: address.zipCode,
+              ),
               if (address.unit.isNotEmpty)
                 _DetailRow(label: 'UNIT', value: address.unit),
-              _OwnerDetailRow(
-                viewModel: viewModel,
-                onGoogleSearch: onGoogleSearch,
-              ),
+              _OwnerDetailRow(viewModel: viewModel, onWebSearch: onWebSearch),
               _UnclaimedPropertyDetail(viewModel: viewModel),
               _ApnDetailRow(
                 label: 'PARCEL',
@@ -1363,14 +1808,13 @@ class _SelectionCard extends StatelessWidget {
               _DetailRow(label: 'UNITS', value: '${address.numberOfUnits}'),
               _DetailRow(
                 label: 'SOURCE',
-                value: '${viewModel.countyName} Address Points',
+                value:
+                    viewModel.parcelSourceLabel ??
+                    '${viewModel.countyName} Address Points',
               ),
             ],
             if (parcel != null) ...[
-              _OwnerDetailRow(
-                viewModel: viewModel,
-                onGoogleSearch: onGoogleSearch,
-              ),
+              _OwnerDetailRow(viewModel: viewModel, onWebSearch: onWebSearch),
               _UnclaimedPropertyDetail(viewModel: viewModel),
               _ApnDetailRow(label: 'APN', apn: parcel.apn),
               if (parcel.situsAddress.isEmpty &&
@@ -1378,7 +1822,9 @@ class _SelectionCard extends StatelessWidget {
                 _DetailRow(
                   key: const Key('resolved-situs-row'),
                   label: 'STREET',
-                  value: viewModel.resolvedSitus!.fullAddress,
+                  value: viewModel.resolvedSitus!.formatAddress(
+                    viewModel.stateCode,
+                  ),
                 ),
                 _DetailRow(
                   label: 'STREET SOURCE',
@@ -1392,6 +1838,7 @@ class _SelectionCard extends StatelessWidget {
                       : parcel.situsAddress,
                 ),
               _LocationDetailRow(
+                stateCode: viewModel.stateCode,
                 city: parcel.city.isEmpty
                     ? viewModel.resolvedSitus?.city ?? ''
                     : parcel.city,
@@ -1411,7 +1858,9 @@ class _SelectionCard extends StatelessWidget {
               ),
               _DetailRow(
                 label: 'SOURCE',
-                value: '${viewModel.countyName} Assessor',
+                value:
+                    viewModel.parcelSourceLabel ??
+                    '${viewModel.countyName} Assessor',
               ),
             ],
           ],
@@ -1422,13 +1871,10 @@ class _SelectionCard extends StatelessWidget {
 }
 
 class _OwnerDetailRow extends StatelessWidget {
-  const _OwnerDetailRow({
-    required this.viewModel,
-    required this.onGoogleSearch,
-  });
+  const _OwnerDetailRow({required this.viewModel, required this.onWebSearch});
 
   final GisMapViewModel viewModel;
-  final ValueChanged<_GoogleSearchRequest> onGoogleSearch;
+  final ValueChanged<_WebSearchRequest> onWebSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -1437,7 +1883,10 @@ class _OwnerDetailRow extends StatelessWidget {
     final ownership = viewModel.propertyOwnership;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      child: Flex(
+        direction: WorkspaceLayout.compactOf(context)
+            ? Axis.vertical
+            : Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -1450,7 +1899,7 @@ class _OwnerDetailRow extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
+          _OwnerValue(
             child: switch (status) {
               OwnerLookupStatus.loading => const Row(
                 children: [
@@ -1459,19 +1908,18 @@ class _OwnerDetailRow extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   SizedBox(width: 10),
-                  Expanded(child: Text('Looking up county tax record…')),
+                  Expanded(child: Text('Looking up public owner record…')),
                 ],
               ),
               OwnerLookupStatus.found => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Expanded(
-                        child: Text(
-                          ownership?.ownerName ?? '',
-                          style: theme.textTheme.bodyMedium,
-                        ),
+                      Text(
+                        ownership?.ownerName ?? '',
+                        style: theme.textTheme.bodyMedium,
                       ),
                       if (ownership case final owner?
                           when owner.ownerName.isNotEmpty) ...[
@@ -1484,10 +1932,36 @@ class _OwnerDetailRow extends StatelessWidget {
                         _GoogleSearchButton(
                           key: const Key('google-owner-search-button'),
                           tooltip: 'Search this owner name on Google',
-                          onPressed: () => onGoogleSearch(
-                            _GoogleSearchRequest(
+                          onPressed: () => onWebSearch(
+                            _WebSearchRequest(
                               query: owner.ownerName,
                               searchSubject: 'Owner name',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          key: const Key('claimit-owner-search-button'),
+                          tooltip:
+                              'Search this owner name on California ClaimIt',
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 48,
+                            height: 48,
+                          ),
+                          padding: const EdgeInsets.all(6),
+                          icon: const Icon(
+                            Icons.account_balance_outlined,
+                            size: 18,
+                          ),
+                          onPressed: () => onWebSearch(
+                            _WebSearchRequest(
+                              query: owner.ownerName,
+                              searchSubject: 'Owner name',
+                              claimItQuery: UnclaimedPropertyQuery.fromOwner(
+                                ownerName: owner.ownerName,
+                                city: '',
+                                zipCode: '',
+                              ),
                             ),
                           ),
                         ),
@@ -1496,7 +1970,8 @@ class _OwnerDetailRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Riverside County Treasurer–Tax Collector • saved locally',
+                    '${viewModel.parcelSourceLabel ?? ownership?.sourceUri.host ?? viewModel.countyName}'
+                    '${ownership?.isSaved == true ? ' • saved locally' : ''}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -1504,7 +1979,7 @@ class _OwnerDetailRow extends StatelessWidget {
                 ],
               ),
               OwnerLookupStatus.notFound => _OwnerLookupMessage(
-                message: 'No exact public tax-record match',
+                message: 'No exact public owner-record match',
                 onRetry: viewModel.retryOwnerLookup,
               ),
               OwnerLookupStatus.unavailable => _OwnerLookupMessage(
@@ -1518,6 +1993,14 @@ class _OwnerDetailRow extends StatelessWidget {
       ),
     );
   }
+}
+
+class _OwnerValue extends StatelessWidget {
+  const _OwnerValue({required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) =>
+      WorkspaceLayout.compactOf(context) ? child : Expanded(child: child);
 }
 
 class _OwnerLookupMessage extends StatelessWidget {
@@ -1559,7 +2042,7 @@ class _GoogleSearchButton extends StatelessWidget {
       tooltip: tooltip,
       onPressed: onPressed,
       visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+      constraints: const BoxConstraints.tightFor(width: 48, height: 48),
       padding: const EdgeInsets.all(6),
       icon: const Icon(Icons.travel_explore_outlined, size: 18),
     );
@@ -1616,7 +2099,7 @@ class _CopyButton extends StatelessWidget {
       tooltip: tooltip,
       onPressed: () => _copy(context),
       visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+      constraints: const BoxConstraints.tightFor(width: 48, height: 48),
       padding: const EdgeInsets.all(6),
       icon: Icon(icon, size: 18),
     );
@@ -1673,14 +2156,24 @@ class _ApnDetailRow extends StatelessWidget {
 
 /// The city and ZIP line, copyable when either part exists.
 class _LocationDetailRow extends StatelessWidget {
-  const _LocationDetailRow({required this.city, required this.zipCode});
+  const _LocationDetailRow({
+    required this.city,
+    required this.zipCode,
+    required this.stateCode,
+  });
+
+  final String stateCode;
 
   final String city;
   final String zipCode;
 
   @override
   Widget build(BuildContext context) {
-    final location = propertyLocationLine(city: city, zipCode: zipCode);
+    final location = propertyLocationLine(
+      stateCode: stateCode,
+      city: city,
+      zipCode: zipCode,
+    );
     return _DetailRow(
       label: 'LOCATION',
       value: location.isEmpty ? 'Not provided' : location,
@@ -1713,6 +2206,34 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    if (WorkspaceLayout.compactOf(context)) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SelectableText(
+                    value,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+                ?trailing,
+              ],
+            ),
+          ],
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -1737,7 +2258,7 @@ class _DetailRow extends StatelessWidget {
 }
 
 class _MapSurface extends StatelessWidget {
-  const _MapSurface({
+  _MapSurface({
     required this.viewModel,
     required this.mapController,
     required this.initialCenter,
@@ -1746,8 +2267,18 @@ class _MapSurface extends StatelessWidget {
     required this.viewportCounty,
     required this.onCenterChanged,
     required this.enableBaseMap,
+    required this.onWebSearch,
+    this.showSelectionCard = false,
+    this.compact = false,
+    this.onDrawn,
+    this.draftArea,
+    this.onDraftChanged,
+    this.onOpenAreaResults,
     this.overlayPadding = EdgeInsets.zero,
-  });
+  }) : super(key: GlobalObjectKey(mapController));
+
+  // Keep the map's camera and gestures when docking chat changes the workspace
+  // layout. Remounting FlutterMap would apply its initial county bounds again.
 
   final GisMapViewModel viewModel;
   final MapController mapController;
@@ -1769,30 +2300,47 @@ class _MapSurface extends StatelessWidget {
 
   final bool enableBaseMap;
 
+  /// Opens the search panel for a property shown in the floating card.
+  final ValueChanged<_WebSearchRequest> onWebSearch;
+
+  /// Whether the selected property floats over the map here.
+  ///
+  /// The desktop layout shows it here; the compact layout has its own place
+  /// for it at the bottom of the screen, clear of the thumb.
+  final bool showSelectionCard;
+  final bool compact;
+  final ValueChanged<AreaShape>? onDrawn;
+  final AreaShape? draftArea;
+  final ValueChanged<AreaShape>? onDraftChanged;
+
+  /// Opens the drawn area's address list, where it is not already on screen.
+  ///
+  /// The desktop layout keeps the list in its side pane and passes nothing.
+  final VoidCallback? onOpenAreaResults;
+
   /// Space reserved around the map for chrome drawn by the parent, such as the
   /// compact layout's floating search bar.
   final EdgeInsets overlayPadding;
 
+  /// Width kept clear on the right of the compact status pills for the
+  /// map buttons.
+  static const double _compactButtonsGutter = 76;
+
+  /// Whether the map left between the compact chrome fits the button stack.
+  bool _roomForMapButtons(BuildContext context) =>
+      MediaQuery.sizeOf(context).height - overlayPadding.vertical >=
+      MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.5) * 220;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: viewModel.routing?.dragActivity ?? viewModel,
+    builder: (context, _) => _buildMap(context),
+  );
+
+  Widget _buildMap(BuildContext context) {
     final theme = Theme.of(context);
     final mapColors = theme.extension<MapColors>()!;
     final boundary = viewModel.boundary;
-    // Panning is bounded by the state, not by the selected county: parcels
-    // come from a statewide layer, so a map that stopped at the county line
-    // would refuse to show data it can load.
-    final cameraConstraint = CameraConstraint.containCenter(
-      bounds: LatLngBounds(
-        LatLng(
-          CaliforniaCounties.stateExtent.south,
-          CaliforniaCounties.stateExtent.west,
-        ),
-        LatLng(
-          CaliforniaCounties.stateExtent.north,
-          CaliforniaCounties.stateExtent.east,
-        ),
-      ),
-    );
     final initialFit = initialBounds == null
         ? null
         : CameraFit.bounds(
@@ -1812,16 +2360,31 @@ class _MapSurface extends StatelessWidget {
             initialCenter: initialCenter,
             initialZoom: 12.4,
             initialCameraFit: initialFit,
-            minZoom: 5,
+            // A phone needs this wider view to navigate across the country.
+            minZoom: 2,
             maxZoom: 20,
-            cameraConstraint: cameraConstraint,
+            // Data coverage controls the layers, not where users can pan.
+            cameraConstraint: const CameraConstraint.unconstrained(),
             backgroundColor: theme.colorScheme.surfaceContainer,
             onMapReady: () {
               final camera = mapController.camera;
               _sendViewport(camera);
             },
             onPositionChanged: (camera, _) => _sendViewport(camera),
-            onTap: (_, point) => viewModel.selectParcelAt(point),
+            onTap: (_, point) => _handleTap(point),
+            // A drag draws the rectangle while the area tool is armed, so the
+            // gestures that would move the map underneath it are off.
+            interactionOptions: viewModel.routing?.dragging == true
+                ? const InteractionOptions(flags: InteractiveFlag.none)
+                : viewModel.areaSelectMode
+                ? const InteractionOptions(
+                    flags:
+                        InteractiveFlag.all &
+                        ~InteractiveFlag.drag &
+                        ~InteractiveFlag.flingAnimation &
+                        ~InteractiveFlag.pinchMove,
+                  )
+                : const InteractionOptions(),
           ),
           children: [
             if (enableBaseMap && viewModel.selectedImagery == null)
@@ -1841,6 +2404,71 @@ class _MapSurface extends StatelessWidget {
                   maxNativeZoom: 20,
                   evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                 ),
+            // County overlays sit above the basemap and below the boundary,
+            // parcels and selection: a layer switched on for context must
+            // never hide the property the user is looking at.
+            for (final overlay in viewModel.activeOverlays)
+              if (overlay.isImagery)
+                Opacity(
+                  opacity: overlay.opacity,
+                  child: TileLayer(
+                    key: ValueKey('overlay-${overlay.id}'),
+                    urlTemplate: overlay.service.uri.toString(),
+                    tileProvider:
+                        overlay.service.render == OverlayRender.imageServer
+                        ? ArcGisImageTileProvider()
+                        : ArcGisExportTileProvider(),
+                    userAgentPackageName: 'com.skippy.riversideAtlas',
+                    maxNativeZoom: 20,
+                    evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+                  ),
+                )
+              else ...[
+                PolygonLayer(
+                  polygons: [
+                    for (final feature in overlay.features)
+                      for (final ring in feature.rings)
+                        Polygon(
+                          points: ring,
+                          color: overlay.color.withValues(
+                            alpha: 0.18 * overlay.opacity,
+                          ),
+                          borderColor: overlay.color.withValues(
+                            alpha: overlay.opacity,
+                          ),
+                          borderStrokeWidth: 1.6,
+                        ),
+                  ],
+                ),
+                PolylineLayer(
+                  polylines: [
+                    for (final feature in overlay.features)
+                      for (final path in feature.paths)
+                        Polyline(
+                          points: path,
+                          color: overlay.color.withValues(
+                            alpha: overlay.opacity,
+                          ),
+                          strokeWidth: 2.4,
+                        ),
+                  ],
+                ),
+                CircleLayer(
+                  circles: [
+                    for (final feature in overlay.features)
+                      for (final point in feature.points)
+                        CircleMarker(
+                          point: point,
+                          radius: 4,
+                          color: overlay.color.withValues(
+                            alpha: overlay.opacity,
+                          ),
+                          borderColor: theme.colorScheme.surface,
+                          borderStrokeWidth: 1,
+                        ),
+                  ],
+                ),
+              ],
             if (viewModel.boundaryVisible && boundary != null)
               PolygonLayer(
                 polygons: boundary.rings
@@ -1896,6 +2524,7 @@ class _MapSurface extends StatelessWidget {
                           width: 38,
                           height: 38,
                           child: _AddressMarker(
+                            stateCode: viewModel.stateCode,
                             address: address,
                             selected:
                                 viewModel.selectedAddress?.sourceId ==
@@ -1942,72 +2571,161 @@ class _MapSurface extends StatelessWidget {
                     )
                     .toList(growable: false),
               ),
+            if (draftArea case final draft?)
+              AreaEditLayer(shape: draft, onChanged: onDraftChanged!)
+            else if (viewModel.areaSelection case final area?)
+              AreaEditLayer(
+                shape: area.shape,
+                editable: !viewModel.areaSelectMode && draftArea == null,
+                onChanged: viewModel.selectArea,
+              ),
+            if (viewModel.routing case final routing?)
+              RouteMapLayer(
+                model: routing,
+                editable: !viewModel.areaSelectMode && draftArea == null,
+                controller: mapController,
+                reserved: overlayPadding,
+                managedPanel: compact,
+              ),
             _MapAttribution(
               imagery: viewModel.selectedImagery,
-              creditsOpenStreetMapData: viewModel.alprCamerasVisible,
+              creditsOpenStreetMapData:
+                  viewModel.alprCamerasVisible || viewModel.routing != null,
               countyName: viewModel.countyName,
             ),
           ],
         ),
-        Positioned(
-          right: overlayPadding.right + 18,
-          top: overlayPadding.top + 18,
-          child: _MapButtons(
-            countyName: viewModel.countyName,
-            onZoomIn: () => mapController.move(
-              mapController.camera.center,
-              mapController.camera.zoom + 1,
+        // On a phone the buttons give way to a draft being edited and to a
+        // sheet tall enough that they would sit on it. They stay otherwise:
+        // they are the only zoom a VoiceOver user has.
+        if (!compact || (draftArea == null && _roomForMapButtons(context)))
+          Positioned(
+            right: overlayPadding.right + (compact ? 12 : 18),
+            top: overlayPadding.top + (compact ? 12 : 18),
+            child: _MapButtons(
+              countyName: viewModel.countyName,
+              areaSelectActive: viewModel.areaSelectMode,
+              onToggleAreaSelect: () =>
+                  viewModel.setAreaSelectMode(!viewModel.areaSelectMode),
+              onZoomIn: () => mapController.move(
+                mapController.camera.center,
+                mapController.camera.zoom + 1,
+              ),
+              onZoomOut: () => mapController.move(
+                mapController.camera.center,
+                mapController.camera.zoom - 1,
+              ),
+              onFit: () => _fitBoundary(boundary),
             ),
-            onZoomOut: () => mapController.move(
-              mapController.camera.center,
-              mapController.camera.zoom - 1,
-            ),
-            onFit: () => _fitBoundary(boundary),
           ),
-        ),
-        Positioned(
-          left: overlayPadding.left + 16,
-          top: overlayPadding.top + 16,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (viewportCounty case final county?
-                  when countySelection != null &&
-                      !viewModel.snapshotStatus.isImporting) ...[
-                CountySwitchChip(
-                  county: county,
-                  onPressed: () => countySelection!.onSelected(county),
-                ),
-                const SizedBox(height: 8),
-              ],
-              if (viewModel.isLoadingMap)
-                const _StatusPill(
-                  icon: SizedBox.square(
-                    dimension: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+        if (!compact ||
+            (overlayPadding.bottom < MediaQuery.sizeOf(context).height * .7 &&
+                !viewModel.areaSelectMode &&
+                draftArea == null))
+          Positioned(
+            left: overlayPadding.left + 16,
+            right: compact
+                ? overlayPadding.right + _compactButtonsGutter
+                : null,
+            top: overlayPadding.top + 16,
+            bottom: overlayPadding.bottom + 12,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (viewportCounty case final county?
+                    when countySelection != null &&
+                        !viewModel.snapshotStatus.isImporting) ...[
+                  CountySwitchChip(
+                    county: county,
+                    onPressed: () => countySelection!.onSelected(county),
                   ),
-                  label: 'Loading map data',
-                )
-              else if (viewModel.mapMessage case final message?)
-                _StatusPill(
-                  icon: const Icon(Icons.zoom_in_map, size: 18),
-                  label: message,
-                )
-              else if (viewModel.selectedImagery case final imagery?)
-                _StatusPill(
-                  icon: const Icon(Icons.satellite_alt_outlined, size: 18),
-                  label: '${imagery.year} aerial imagery',
-                ),
-              if (viewModel.alprMessage case final message?) ...[
-                const SizedBox(height: 8),
-                _StatusPill(
-                  icon: const Icon(Icons.videocam_off_outlined, size: 18),
-                  label: message,
-                ),
+                  const SizedBox(height: 8),
+                ],
+                if (viewModel.isLoadingMap)
+                  const _StatusPill(
+                    icon: SizedBox.square(
+                      dimension: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    label: 'Loading map data',
+                  )
+                else if (viewModel.mapMessage case final message?)
+                  _StatusPill(
+                    icon: const Icon(Icons.zoom_in_map, size: 18),
+                    label: message,
+                  )
+                else if (viewModel.selectedImagery case final imagery?)
+                  _StatusPill(
+                    icon: const Icon(Icons.satellite_alt_outlined, size: 18),
+                    label: '${imagery.year} aerial imagery',
+                  ),
+                if (viewModel.alprMessage case final message?) ...[
+                  const SizedBox(height: 8),
+                  _StatusPill(
+                    icon: const Icon(Icons.videocam_off_outlined, size: 18),
+                    label: message,
+                  ),
+                ],
+                if (onOpenAreaResults case final openResults?)
+                  if (viewModel.areaSelection case final area?) ...[
+                    const SizedBox(height: 8),
+                    _AreaResultsPill(selection: area, onPressed: openResults),
+                  ],
+                if (viewModel.identifiedOverlay case final identified?
+                    when !compact)
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: SizedBox(
+                        width: _selectionCardWidth,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {},
+                          child: _OverlayIdentifyCard(
+                            identified: identified,
+                            onClose: viewModel.clearIdentifiedOverlay,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (showSelectionCard &&
+                    (viewModel.selectedAddress != null ||
+                        viewModel.selectedParcel != null))
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: SizedBox(
+                        width: _selectionCardWidth,
+                        // The map is directly underneath: without this, a tap on
+                        // the card's background falls through and selects the
+                        // parcel it is covering.
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {},
+                          child: SingleChildScrollView(
+                            child: _SelectionCard(
+                              viewModel: viewModel,
+                              onWebSearch: onWebSearch,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
-            ],
+            ),
           ),
-        ),
+        if (viewModel.routing case final routing? when !compact)
+          Positioned.fill(
+            child: RouteBuilderOverlay(
+              model: routing,
+              padding: overlayPadding,
+              near: () => mapController.camera.center,
+              onOpen: () => viewModel.setAreaSelectMode(false),
+            ),
+          ),
         if (viewModel.errorMessage case final error?)
           Positioned(
             left: 16,
@@ -2016,6 +2734,17 @@ class _MapSurface extends StatelessWidget {
             child: _ErrorBanner(
               message: error,
               onDismiss: viewModel.dismissError,
+            ),
+          ),
+        if (viewModel.areaSelectMode)
+          Positioned.fill(
+            key: const Key('area-select-overlay'),
+            child: AreaSelectOverlay(
+              mapController: mapController,
+              tool: viewModel.areaTool,
+              onToolChanged: viewModel.setAreaTool,
+              onDrawn: onDrawn ?? viewModel.selectArea,
+              onCancel: () => viewModel.setAreaSelectMode(false),
             ),
           ),
         if (viewModel.isInitializing)
@@ -2027,6 +2756,22 @@ class _MapSurface extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  /// Identifies an overlay feature under the tap, or selects a parcel.
+  ///
+  /// Overlays are offered the tap first: they are what the user just switched
+  /// on, and a parcel is still one tap away anywhere they have not drawn.
+  void _handleTap(LatLng point) {
+    if (viewModel.routing?.acceptMapPoint(point) ?? false) return;
+    // Roughly ten logical pixels of slack, converted to degrees at the
+    // current zoom, so a point feature stays tappable at every scale.
+    final tolerance = 10 * 360 / (256 * math.pow(2, mapController.camera.zoom));
+    if (viewModel.identifyOverlayAt(point, tolerance: tolerance.toDouble())) {
+      return;
+    }
+    viewModel.clearIdentifiedOverlay();
+    viewModel.selectParcelAt(point);
   }
 
   void _sendViewport(MapCamera camera) {
@@ -2059,13 +2804,96 @@ class _MapSurface extends StatelessWidget {
   }
 }
 
+/// The attributes of one tapped overlay feature.
+///
+/// Deliberately a plain field/value list: this app has not read the schema of
+/// an arbitrary county layer, so it shows what the publisher published rather
+/// than inventing labels for it.
+class _OverlayIdentifyCard extends StatelessWidget {
+  const _OverlayIdentifyCard({required this.identified, required this.onClose});
+
+  final OverlayIdentification identified;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final fields = identified.fields;
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Icon(Icons.circle, size: 14, color: identified.color),
+            title: Text(
+              identified.title,
+              style: theme.textTheme.titleSmall,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: 'Dismiss',
+              onPressed: onClose,
+            ),
+          ),
+          const Divider(height: 1),
+          Flexible(
+            child: fields.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      'This feature carries no attributes.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: fields.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 2),
+                    itemBuilder: (context, index) {
+                      final (:field, :value) = fields[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              field,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            SelectableText(
+                              value,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AddressMarker extends StatelessWidget {
   const _AddressMarker({
+    required this.stateCode,
     required this.address,
     required this.selected,
     required this.onTap,
   });
 
+  final String stateCode;
   final Address address;
   final bool selected;
   final VoidCallback onTap;
@@ -2076,7 +2904,7 @@ class _AddressMarker extends StatelessWidget {
     final color = selected ? colors.addressSelected : colors.address;
     return Semantics(
       button: true,
-      label: 'View ${address.displayAddress}',
+      label: 'View ${address.formatAddress(stateCode)}',
       child: Tooltip(
         message: address.fullAddress,
         child: InkResponse(
@@ -2233,14 +3061,20 @@ class _MapButtons extends StatelessWidget {
     required this.onZoomOut,
     required this.onFit,
     required this.countyName,
+    required this.areaSelectActive,
+    required this.onToggleAreaSelect,
   });
 
   /// County named in the fit-to-boundary tooltip.
   final String countyName;
 
+  /// Whether a drag on the map currently draws a rectangle.
+  final bool areaSelectActive;
+
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
   final VoidCallback onFit;
+  final VoidCallback onToggleAreaSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -2266,58 +3100,59 @@ class _MapButtons extends StatelessWidget {
             onPressed: onFit,
             icon: const Icon(Icons.center_focus_strong),
           ),
+          const Divider(height: 1),
+          IconButton(
+            key: const Key('area-select-tool-button'),
+            tooltip: areaSelectActive
+                ? 'Cancel area selection'
+                : 'List the addresses in an area',
+            isSelected: areaSelectActive,
+            onPressed: onToggleAreaSelect,
+            icon: const Icon(Icons.highlight_alt_outlined),
+            selectedIcon: const Icon(Icons.highlight_alt),
+          ),
         ],
       ),
     );
   }
 }
 
-class _CompactLayerBar extends StatelessWidget {
-  const _CompactLayerBar({required this.viewModel, required this.onOpenTools});
+/// The compact layout's way back into the drawn area's address list.
+class _AreaResultsPill extends StatelessWidget {
+  const _AreaResultsPill({required this.selection, required this.onPressed});
 
-  final GisMapViewModel viewModel;
-  final VoidCallback onOpenTools;
+  final AreaSelection selection;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            tooltip: 'Address points',
-            isSelected: viewModel.addressesVisible,
-            onPressed: () =>
-                viewModel.setAddressesVisible(!viewModel.addressesVisible),
-            icon: const Icon(Icons.home_work_outlined),
-            selectedIcon: const Icon(Icons.home_work),
+    final theme = Theme.of(context);
+    return Material(
+      elevation: 3,
+      color: theme.colorScheme.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        key: const Key('area-results-pill'),
+        borderRadius: BorderRadius.circular(14),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.list_alt_outlined, size: 18),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  areaSelectionHeadline(selection),
+                  style: theme.textTheme.labelLarge,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 18),
+            ],
           ),
-          IconButton(
-            tooltip: 'Parcel boundaries',
-            isSelected: viewModel.parcelsVisible,
-            onPressed: () =>
-                viewModel.setParcelsVisible(!viewModel.parcelsVisible),
-            icon: const Icon(Icons.grid_4x4_outlined),
-            selectedIcon: const Icon(Icons.grid_4x4),
-          ),
-          IconButton(
-            tooltip: 'License-plate readers',
-            isSelected: viewModel.alprCamerasVisible,
-            onPressed: viewModel.alprCamerasAvailable
-                ? () => viewModel.setAlprCamerasVisible(
-                    !viewModel.alprCamerasVisible,
-                  )
-                : null,
-            icon: const Icon(Icons.videocam_outlined),
-            selectedIcon: const Icon(Icons.videocam),
-          ),
-          IconButton(
-            tooltip: 'Data and layer settings',
-            onPressed: onOpenTools,
-            icon: const Icon(Icons.tune),
-          ),
-        ],
+        ),
       ),
     );
   }

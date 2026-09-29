@@ -1,0 +1,2551 @@
+{
+  "displayFieldName": "APN",
+  "fieldAliases": {
+    "OBJECTID": "OBJECTID",
+    "APN": "APN",
+    "PropertyFullStreetAddress": "PropertyFullStreetAddress",
+    "PropertyCity": "PropertyCity",
+    "PropertyZipCode": "PropertyZipCode",
+    "OwnerName": "OwnerName"
+  },
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID"
+    },
+    {
+      "name": "APN",
+      "type": "esriFieldTypeString",
+      "alias": "APN",
+      "length": 12
+    },
+    {
+      "name": "PropertyFullStreetAddress",
+      "type": "esriFieldTypeString",
+      "alias": "PropertyFullStreetAddress",
+      "length": 65
+    },
+    {
+      "name": "PropertyCity",
+      "type": "esriFieldTypeString",
+      "alias": "PropertyCity",
+      "length": 35
+    },
+    {
+      "name": "PropertyZipCode",
+      "type": "esriFieldTypeString",
+      "alias": "PropertyZipCode",
+      "length": 10
+    },
+    {
+      "name": "OwnerName",
+      "type": "esriFieldTypeString",
+      "alias": "OwnerName",
+      "length": 120
+    }
+  ],
+  "features": [
+    {
+      "attributes": {
+        "OBJECTID": 1,
+        "APN": "10101001C",
+        "PropertyFullStreetAddress": null,
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "",
+        "OwnerName": "EL PASO NATURAL GAS COMPANY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 2,
+        "APN": "10101010",
+        "PropertyFullStreetAddress": "11350 W CIVIC CENTER DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AVONDALE CITY OF"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 3,
+        "APN": "10101012",
+        "PropertyFullStreetAddress": null,
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "",
+        "OwnerName": "AVONDALE CITY OF"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 4,
+        "APN": "10101018",
+        "PropertyFullStreetAddress": null,
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "",
+        "OwnerName": "AVONDALE CITY OF"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 5,
+        "APN": "10101019",
+        "PropertyFullStreetAddress": "702 S 114TH LN",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "NGUYEN AN K/NHAN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 6,
+        "APN": "10101021",
+        "PropertyFullStreetAddress": "710 S 114TH LN",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "JAVIER O CORDOVA BROWN REVOCABLE LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 7,
+        "APN": "10101024",
+        "PropertyFullStreetAddress": "11435 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TERRY L FIELDS SR LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 8,
+        "APN": "10101025",
+        "PropertyFullStreetAddress": "806 S 114TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "JIMENEZ CHRISTINA T"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 9,
+        "APN": "10101074",
+        "PropertyFullStreetAddress": "11421 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GONZALEZ MIRIAM"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 10,
+        "APN": "10101026",
+        "PropertyFullStreetAddress": "810 S 114TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "J AND L AZ PROPERTIES LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 11,
+        "APN": "10101027",
+        "PropertyFullStreetAddress": "11421 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PROGRESS RESIDENTIAL BORROWER 11 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 12,
+        "APN": "10101032",
+        "PropertyFullStreetAddress": "11401 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DUPUIS VICTOR M/SALLY J"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 13,
+        "APN": "10101039",
+        "PropertyFullStreetAddress": "818 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RIVAS JOSUE/ANITA J"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 14,
+        "APN": "10101040",
+        "PropertyFullStreetAddress": "822 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VRP 113 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 15,
+        "APN": "10101041",
+        "PropertyFullStreetAddress": "826 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WILLIS DWANNA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 16,
+        "APN": "10101137",
+        "PropertyFullStreetAddress": "11370 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WISEMAN FAMILY TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 17,
+        "APN": "10101042",
+        "PropertyFullStreetAddress": "830 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "REYNA MARTHA/HUERTA SILVIA GOMEZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 18,
+        "APN": "10101044",
+        "PropertyFullStreetAddress": "829 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SERNA OSCAR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 19,
+        "APN": "10101045",
+        "PropertyFullStreetAddress": "825 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BEGEMAN ANGELICA M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 20,
+        "APN": "10101046",
+        "PropertyFullStreetAddress": "821 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WEST AVONDALE LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 21,
+        "APN": "10101047",
+        "PropertyFullStreetAddress": "817 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FUX JEBIDIAH MARTIN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 22,
+        "APN": "10101048",
+        "PropertyFullStreetAddress": "813 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ALVA TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 23,
+        "APN": "10101051",
+        "PropertyFullStreetAddress": "801 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LOPEZ MARIA D/CORRALES OCTAVIO JR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 24,
+        "APN": "10225002J",
+        "PropertyFullStreetAddress": "3640 N 91ST AVE",
+        "PropertyCity": "PHOENIX",
+        "PropertyZipCode": "85037",
+        "OwnerName": "S R P A I & P D"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 25,
+        "APN": "10101054",
+        "PropertyFullStreetAddress": "709 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CROW PETE/PAMELA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 26,
+        "APN": "10101055",
+        "PropertyFullStreetAddress": "705 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SACHDEV SHARAD/RITIKA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 27,
+        "APN": "10101056",
+        "PropertyFullStreetAddress": "701 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AVILA JASON/BRENDA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 28,
+        "APN": "10101057",
+        "PropertyFullStreetAddress": "802 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA MARIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 29,
+        "APN": "10101058",
+        "PropertyFullStreetAddress": "806 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ALONSO MARIA VICTORIA/MEDINA CHRISTIAN MANUEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 30,
+        "APN": "10101059",
+        "PropertyFullStreetAddress": "11302 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SIERRA JOSE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 31,
+        "APN": "10101060",
+        "PropertyFullStreetAddress": "11306 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ROMERO MICHELLE/HERNANDEZ GEORGE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 32,
+        "APN": "10101061",
+        "PropertyFullStreetAddress": "11310 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HOWARTH ROBERT R JR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 33,
+        "APN": "10101063",
+        "PropertyFullStreetAddress": "11318 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PIERCE ASHLEY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 34,
+        "APN": "10101064",
+        "PropertyFullStreetAddress": "11322 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CASTILLO EDWARD L/ESTRADA ISMAEL M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 35,
+        "APN": "10101065",
+        "PropertyFullStreetAddress": "11402 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DODGE RYAN/MELISA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 36,
+        "APN": "10101066",
+        "PropertyFullStreetAddress": "11406 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HIGAREDA MARCELA VALENZUELA /MIGUEL FUENTES"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 37,
+        "APN": "10101068",
+        "PropertyFullStreetAddress": "11414 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "4D ASSET MANAGEMENT LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 38,
+        "APN": "10109002",
+        "PropertyFullStreetAddress": "9361 W MONROE ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "ARROYO RAFAEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 39,
+        "APN": "10101070",
+        "PropertyFullStreetAddress": "11422 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VALENCIA JUAN MANUEL ZEPEDA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 40,
+        "APN": "10101071",
+        "PropertyFullStreetAddress": "11426 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RODRIGUEZ SAQUEO JR/MORALES EVA C"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 41,
+        "APN": "10101073",
+        "PropertyFullStreetAddress": "11425 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ZAMORA CINTHYA/GUTIERREZ PATRICIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 42,
+        "APN": "10101076",
+        "PropertyFullStreetAddress": "11413 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "KNUTSON SHAWN H/JACQUELINE L RAMIREZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 43,
+        "APN": "10101078",
+        "PropertyFullStreetAddress": "11405 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SFR II BORROWER 2021-3 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 44,
+        "APN": "10101080",
+        "PropertyFullStreetAddress": "11329 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FELIX FAMILY TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 45,
+        "APN": "10101081",
+        "PropertyFullStreetAddress": "11325 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MORRISON OLIVER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 46,
+        "APN": "10101082",
+        "PropertyFullStreetAddress": "11321 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RANDOLPH MICHAEL VINCENT/SHERMAN HEATHER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 47,
+        "APN": "10109004",
+        "PropertyFullStreetAddress": "9359 W MONROE ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "BURTON JAROLD J & JOY J"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 48,
+        "APN": "10101083",
+        "PropertyFullStreetAddress": "11317 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA PATRICIA LOZANO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 49,
+        "APN": "10101084",
+        "PropertyFullStreetAddress": "11313 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VARGAS EDGAR SARMIENTO/NUNEZ LESLIE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 50,
+        "APN": "10101090",
+        "PropertyFullStreetAddress": "11322 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "2018-4 IH BORROWER LP"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 51,
+        "APN": "10114160",
+        "PropertyFullStreetAddress": "10219 W HILTON AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "EATON-STEWART SARINA/EATON JAZMA CHIFFON"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 52,
+        "APN": "10101091",
+        "PropertyFullStreetAddress": "11326 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CARROLL LISA MAY/VIRAMONTES DEE A"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 53,
+        "APN": "10101092",
+        "PropertyFullStreetAddress": "11330 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HUERIGO DIANA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 54,
+        "APN": "10101095",
+        "PropertyFullStreetAddress": "11410 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LOPEZ ALBERT"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 55,
+        "APN": "10101096",
+        "PropertyFullStreetAddress": "11414 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VASQUEZ MANUEL F"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 56,
+        "APN": "10101099",
+        "PropertyFullStreetAddress": "11426 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BEAZER PRE-OWNER HOMES LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 57,
+        "APN": "10101100",
+        "PropertyFullStreetAddress": "11430 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HASSENSTAB ROBERT/HOLLY B"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 58,
+        "APN": "10101101",
+        "PropertyFullStreetAddress": "11434 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DIAZ JESUS P"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 59,
+        "APN": "10101102",
+        "PropertyFullStreetAddress": "11438 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GONZALEZ ASHLEY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 60,
+        "APN": "10101103",
+        "PropertyFullStreetAddress": "634 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DO THUY THI/THANG DUC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 61,
+        "APN": "10101507",
+        "PropertyFullStreetAddress": "10760 W WOODLAND AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CONCEICAO ALBINO/MARIA IRREVOCABLE TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 62,
+        "APN": "10101107",
+        "PropertyFullStreetAddress": "602 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AYALA REBECCA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 63,
+        "APN": "10101108",
+        "PropertyFullStreetAddress": "534 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ERIC WAYNE MCWILLIAMS REVOCABLE LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 64,
+        "APN": "10101109",
+        "PropertyFullStreetAddress": "530 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ADEM & JOHARE AB LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 65,
+        "APN": "10101113",
+        "PropertyFullStreetAddress": "514 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LUJAN KARLA P ALARCON"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 66,
+        "APN": "10101115",
+        "PropertyFullStreetAddress": "506 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CHAN SIMMON TR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 67,
+        "APN": "10101116",
+        "PropertyFullStreetAddress": "502 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HOLLEY ELIJAH JR/MILES DELISA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 68,
+        "APN": "10101117",
+        "PropertyFullStreetAddress": "426 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VALDEZ SHELL MAE UDAUNDO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 69,
+        "APN": "10101122",
+        "PropertyFullStreetAddress": "406 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GUTIERREZ ROBERTO E/VIOLETA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 70,
+        "APN": "10101123",
+        "PropertyFullStreetAddress": "402 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FLORES IRASEMA AVILA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 71,
+        "APN": "10101125",
+        "PropertyFullStreetAddress": "405 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FITZPATRICK DONOVAN C/TIFFANY R"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 72,
+        "APN": "10101128",
+        "PropertyFullStreetAddress": "417 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SZATMARI STEVE ISTVAN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 73,
+        "APN": "10101134",
+        "PropertyFullStreetAddress": "11382 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DYMECKI JULIAN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 74,
+        "APN": "10101135",
+        "PropertyFullStreetAddress": "11378 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CHILDRESS ANN/RICHARD"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 75,
+        "APN": "10101136",
+        "PropertyFullStreetAddress": "11374 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RIVERA LETICIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 76,
+        "APN": "10101138",
+        "PropertyFullStreetAddress": "11366 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TSO RICHARD B JR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 77,
+        "APN": "10101139",
+        "PropertyFullStreetAddress": "410 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MIRELES ADRIANA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 78,
+        "APN": "10101140",
+        "PropertyFullStreetAddress": "406 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PYNE QUIAH/GODIA EVELYNE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 79,
+        "APN": "10101141",
+        "PropertyFullStreetAddress": "402 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LYNN COLE CAPITAL CORPORATION"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 80,
+        "APN": "10109005",
+        "PropertyFullStreetAddress": "9362 W ADAMS ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "GARCIA ANGEL C/MARGARITA R"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 81,
+        "APN": "10101143",
+        "PropertyFullStreetAddress": "11353 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AH4R PROPERTIES LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 82,
+        "APN": "10101147",
+        "PropertyFullStreetAddress": "11369 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MALDONADO ALBERTO/MAGALY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 83,
+        "APN": "10101148",
+        "PropertyFullStreetAddress": "11373 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PROGRESS RESIDENTIAL BORROWER 16 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 84,
+        "APN": "10101150",
+        "PropertyFullStreetAddress": "11381 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GALLEGOS MIGUEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 85,
+        "APN": "10101151",
+        "PropertyFullStreetAddress": "11385 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DOLORES R ESPINOSA 2003 REVOCABLE TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 86,
+        "APN": "10101011",
+        "PropertyFullStreetAddress": "125 S AVONDALE BLVD",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AVONDALE CITY OF"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 87,
+        "APN": "10101014",
+        "PropertyFullStreetAddress": "11490 W CIVIC CENTER DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AVONDALE CITY OF"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 88,
+        "APN": "10101020",
+        "PropertyFullStreetAddress": "706 S 114TH LN",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SILLIVAN LAURA M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 89,
+        "APN": "10101022",
+        "PropertyFullStreetAddress": "714 S 114TH LN",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HULSEY ROBERT K/PAMELA M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 90,
+        "APN": "10109001",
+        "PropertyFullStreetAddress": "9360 W ADAMS ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "CARAVEO VALERIE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 91,
+        "APN": "10101023",
+        "PropertyFullStreetAddress": "11439 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DAVIS ERIC A/SHANA I"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 92,
+        "APN": "10104006D",
+        "PropertyFullStreetAddress": "182 S 95TH AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "TOLLESON UNION HIGH SCHOOL DISTRICT"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 93,
+        "APN": "10101028",
+        "PropertyFullStreetAddress": "11417 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ZEPEDA MARIA ELENA RAMIREZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 94,
+        "APN": "10101029",
+        "PropertyFullStreetAddress": "11413 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BAEZ MARC CHRISTOPHER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 95,
+        "APN": "10101030",
+        "PropertyFullStreetAddress": "11409 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ATALLAH JASON"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 96,
+        "APN": "10101031",
+        "PropertyFullStreetAddress": "11405 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SOLIE SUNA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 97,
+        "APN": "10101033",
+        "PropertyFullStreetAddress": "11321 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ARROYO LILIANA GISSELE/MICHAEL/ZAVALA TERESA CASTANEDA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 98,
+        "APN": "10101034",
+        "PropertyFullStreetAddress": "11317 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA CHRISTOPHER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 99,
+        "APN": "10101035",
+        "PropertyFullStreetAddress": "11313 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MEDRANO ANGEL/IDANIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 100,
+        "APN": "10101036",
+        "PropertyFullStreetAddress": "11309 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CHAVEZ JAMES LEE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 101,
+        "APN": "10101037",
+        "PropertyFullStreetAddress": "11305 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RIVAS JESUS G ROJO/MARTINEZ ADRIANA LOPEZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 102,
+        "APN": "10101038",
+        "PropertyFullStreetAddress": "11301 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BRISENO JOSE A DUENAS/DUENAS BLANCA CINDI"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 103,
+        "APN": "10101043",
+        "PropertyFullStreetAddress": "833 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GASTELUM IRAM D CHAVARIN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 104,
+        "APN": "10101049",
+        "PropertyFullStreetAddress": "809 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "809 S 113TH AVE LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 105,
+        "APN": "10101050",
+        "PropertyFullStreetAddress": "805 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MARTINEZ VICTOR M/ALICIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 106,
+        "APN": "10101052",
+        "PropertyFullStreetAddress": "717 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SOLIS JAVIER ROBLES/FLORES ARACELI ROBLES"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 107,
+        "APN": "10101053",
+        "PropertyFullStreetAddress": "713 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ESPINO MAYRA C"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 108,
+        "APN": "10115621",
+        "PropertyFullStreetAddress": "10032 W HILTON AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "MURILLO LUIS A MATEOS"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 109,
+        "APN": "10101062",
+        "PropertyFullStreetAddress": "11314 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LOPEZ AGUSTIN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 110,
+        "APN": "10101067",
+        "PropertyFullStreetAddress": "11410 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GRIJALVA BENJAMIN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 111,
+        "APN": "10101069",
+        "PropertyFullStreetAddress": "11418 W TONTO ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PEREZ WILLIAM J/MARY E"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 112,
+        "APN": "10101072",
+        "PropertyFullStreetAddress": "11429 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MORGA GENARO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 113,
+        "APN": "10101075",
+        "PropertyFullStreetAddress": "11417 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PEDROTTI JUSTIN M/LOAFMAN TRACY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 114,
+        "APN": "10101077",
+        "PropertyFullStreetAddress": "11409 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AVILA VINCENT B SR/ESTELA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 115,
+        "APN": "10101079",
+        "PropertyFullStreetAddress": "11401 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GALGALO ALI/JALDESSA BATI"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 116,
+        "APN": "10101085",
+        "PropertyFullStreetAddress": "11302 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TODD DONALD/JENNIFER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 117,
+        "APN": "10101086",
+        "PropertyFullStreetAddress": "11306 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "KREIPEL JAMES"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 118,
+        "APN": "10101087",
+        "PropertyFullStreetAddress": "11310 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DIMAS JESUS E LUNA/PARTIDA NOEMI A GUTIERREZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 119,
+        "APN": "10101088",
+        "PropertyFullStreetAddress": "11314 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SEYMORE DIONNA M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 120,
+        "APN": "10101089",
+        "PropertyFullStreetAddress": "11318 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VILLANUEVA JUAN G"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 121,
+        "APN": "10101093",
+        "PropertyFullStreetAddress": "11402 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SUVIA MARIA CRISTINA RENTERIA/MARCOS PEDRO CLEMENTE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 122,
+        "APN": "10101094",
+        "PropertyFullStreetAddress": "11406 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "STARK CORLETHA ANN/JASON TROY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 123,
+        "APN": "10101097",
+        "PropertyFullStreetAddress": "11418 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PEREZ SANDY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 124,
+        "APN": "10101098",
+        "PropertyFullStreetAddress": "11422 W HADLEY ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BOYLE RACHEL L"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 125,
+        "APN": "10101104",
+        "PropertyFullStreetAddress": "630 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LOPEZ ROBERT"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 126,
+        "APN": "10101105",
+        "PropertyFullStreetAddress": "614 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BARRAGAN FAMILY TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 127,
+        "APN": "10101106",
+        "PropertyFullStreetAddress": "606 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SINGH NIRMAL/KAUR HARJINDER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 128,
+        "APN": "10101110",
+        "PropertyFullStreetAddress": "526 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ADAMS WILLIAM"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 129,
+        "APN": "10101111",
+        "PropertyFullStreetAddress": "522 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PAYTEE PAULETTE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 130,
+        "APN": "10101112",
+        "PropertyFullStreetAddress": "518 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PARTIDA RAMON ALVAREZ/OZORIO ARTURO VALENCIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 131,
+        "APN": "10101114",
+        "PropertyFullStreetAddress": "510 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "NIEBLAS JUNIOR Y/ESTRADA SANDRA J"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 132,
+        "APN": "10101118",
+        "PropertyFullStreetAddress": "422 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RAMIREZ AUSTER D/GUADALUPE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 133,
+        "APN": "10101119",
+        "PropertyFullStreetAddress": "418 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MACKINTOSH MARK"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 134,
+        "APN": "10101120",
+        "PropertyFullStreetAddress": "414 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BEAZER PRE-OWNED HOMES LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 135,
+        "APN": "10101121",
+        "PropertyFullStreetAddress": "410 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "IHFC ARIZONA LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 136,
+        "APN": "10101124",
+        "PropertyFullStreetAddress": "401 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DIAZ JAVIER O CABRERA/BOTELLO LILIA ESTRADA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 137,
+        "APN": "10101126",
+        "PropertyFullStreetAddress": "409 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SANDOVAL JUDITH LEDESMA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 138,
+        "APN": "10101127",
+        "PropertyFullStreetAddress": "413 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ORTIZ MARTIN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 139,
+        "APN": "10101129",
+        "PropertyFullStreetAddress": "421 S 114TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MIRANDA ARTURO LUCERO/LUCERO RUBISELA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 140,
+        "APN": "10101130",
+        "PropertyFullStreetAddress": "11398 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GAY DANIEL/REBECCA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 141,
+        "APN": "10101131",
+        "PropertyFullStreetAddress": "11394 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA MICHAEL LEE/DEANNA LAURA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 142,
+        "APN": "10101132",
+        "PropertyFullStreetAddress": "11390 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VUONG NGA T"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 143,
+        "APN": "10101133",
+        "PropertyFullStreetAddress": "11386 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LEE KATHIE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 144,
+        "APN": "10101142",
+        "PropertyFullStreetAddress": "11349 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MIRANDOLA GINA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 145,
+        "APN": "10101144",
+        "PropertyFullStreetAddress": "11357 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "JIMENEZ GABRIEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 146,
+        "APN": "10101145",
+        "PropertyFullStreetAddress": "11361 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CANEZ JESUS M JR/SHARON E"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 147,
+        "APN": "10101146",
+        "PropertyFullStreetAddress": "11365 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CRUZ OMAR RAMIREZ/ACEVES GLENDI Y SOTO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 148,
+        "APN": "10101149",
+        "PropertyFullStreetAddress": "11377 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HALL DEREK M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 149,
+        "APN": "50475803",
+        "PropertyFullStreetAddress": "24058 W LUXTON LN",
+        "PropertyCity": "BUCKEYE",
+        "PropertyZipCode": "85326",
+        "OwnerName": "PENDING"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 150,
+        "APN": "50475804",
+        "PropertyFullStreetAddress": "24052 W LUXTON LN",
+        "PropertyCity": "BUCKEYE",
+        "PropertyZipCode": "85326",
+        "OwnerName": "PENDING"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 151,
+        "APN": "50475805",
+        "PropertyFullStreetAddress": "24046 W LUXTON LN",
+        "PropertyCity": "BUCKEYE",
+        "PropertyZipCode": "85326",
+        "OwnerName": "PENDING"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 152,
+        "APN": "10101152",
+        "PropertyFullStreetAddress": "11398 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BROWNLEE JEROME B JR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 153,
+        "APN": "10101155",
+        "PropertyFullStreetAddress": "11386 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "QUEEN DANIELE SR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 154,
+        "APN": "10101156",
+        "PropertyFullStreetAddress": "11382 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ALLEN YVONNE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 155,
+        "APN": "10101158",
+        "PropertyFullStreetAddress": "11374 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ORTEGA JOE GONZALO RODRIGUEZ/SOTO RITA ADRIANA AGUIRRE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 156,
+        "APN": "10101160",
+        "PropertyFullStreetAddress": "11366 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PLASENCIA CARLOS"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 157,
+        "APN": "10101162",
+        "PropertyFullStreetAddress": "11358 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LEWIS GLEN ALLEN/JOSIVOFF JENNIFER LYNN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 158,
+        "APN": "10101163",
+        "PropertyFullStreetAddress": "11354 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MEDINA JOSE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 159,
+        "APN": "10101164",
+        "PropertyFullStreetAddress": "11350 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VASQUEZ ALMA A/INEZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 160,
+        "APN": "10101167",
+        "PropertyFullStreetAddress": "11338 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ROSAURA MITRE LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 161,
+        "APN": "10114162",
+        "PropertyFullStreetAddress": "10211 W HILTON AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "AMEZCUA DENNY MATA/CASTILLO MARAY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 162,
+        "APN": "10101170",
+        "PropertyFullStreetAddress": "11326 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GONZALEZ JESSICA IVETTE/CARRENO CAESAR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 163,
+        "APN": "10101172",
+        "PropertyFullStreetAddress": "11318 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ABARCA KAREN MARISOL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 164,
+        "APN": "10101174",
+        "PropertyFullStreetAddress": "11310 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "EVELYN J MASCHAT LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 165,
+        "APN": "10101175",
+        "PropertyFullStreetAddress": "11306 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MIMS BRENDLYN W"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 166,
+        "APN": "10101176",
+        "PropertyFullStreetAddress": "11302 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LAL ROMIL AMITESH/PRASAD RICHA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 167,
+        "APN": "10101177",
+        "PropertyFullStreetAddress": "11284 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CORRALES MARIEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 168,
+        "APN": "10101179",
+        "PropertyFullStreetAddress": "11276 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ROSALES GERARDO/VALENTE RODOLFINA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 169,
+        "APN": "10101180",
+        "PropertyFullStreetAddress": "11272 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HAMPTON TERRA LYNN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 170,
+        "APN": "10101181",
+        "PropertyFullStreetAddress": "11268 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SARABIA ERICK O PEREZ/ESPINOZA LORELY J"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 171,
+        "APN": "10101182",
+        "PropertyFullStreetAddress": "11264 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ALONZO ERIKA M/MARIO A"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 172,
+        "APN": "10101184",
+        "PropertyFullStreetAddress": "11256 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ACOSTA HECTOR GERMAN LOPEZ/MORALES ROSA ELVIRA AVILA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 173,
+        "APN": "10101185",
+        "PropertyFullStreetAddress": "11252 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MONTOYA LETICIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 174,
+        "APN": "10101187",
+        "PropertyFullStreetAddress": "11263 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "HUERTA GUSTAVO ZEPEDA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 175,
+        "APN": "10101188",
+        "PropertyFullStreetAddress": "11267 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA ERICKA N/SEGURA CHRISTOPHER G"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 176,
+        "APN": "10101192",
+        "PropertyFullStreetAddress": "11283 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "EL DORADO RESIDENTIAL PARTNERS II LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 177,
+        "APN": "10101193",
+        "PropertyFullStreetAddress": "11287 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MURILLO CARLOS H"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 178,
+        "APN": "10101194",
+        "PropertyFullStreetAddress": "11301 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MUNOZ-RUIZ CLAUDIA/FELIZ EDUARDO MANUEL GARCIA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 179,
+        "APN": "10101195",
+        "PropertyFullStreetAddress": "11305 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WHITE DANA JR/MICHELLE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 180,
+        "APN": "10101196",
+        "PropertyFullStreetAddress": "11309 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SANDOVAL MARIA MARIBEL GUTIERREZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 181,
+        "APN": "10101198",
+        "PropertyFullStreetAddress": "11317 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ARP 2014-1 BORROWER LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 182,
+        "APN": "10101202",
+        "PropertyFullStreetAddress": "314 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "NUNEZ FAMILY TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 183,
+        "APN": "10101204",
+        "PropertyFullStreetAddress": "306 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MIRANDA MARTHA HILDA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 184,
+        "APN": "10101206",
+        "PropertyFullStreetAddress": "11330 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "INVITATION HOMES 7 LP"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 185,
+        "APN": "10101207",
+        "PropertyFullStreetAddress": "11326 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ORNELAS ALVARO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 186,
+        "APN": "10101208",
+        "PropertyFullStreetAddress": "11322 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LARA ROSARIO A FIERRO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 187,
+        "APN": "10117095",
+        "PropertyFullStreetAddress": "10947 W MOHAVE ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "INZUNZA EBELIA LOPEZ/LOPEZ LEONARDO GUTIERREZ"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 188,
+        "APN": "10101210",
+        "PropertyFullStreetAddress": "11314 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FLETCHER JORETTA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 189,
+        "APN": "10101211",
+        "PropertyFullStreetAddress": "11310 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ALVAREZ DANNY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 190,
+        "APN": "10101213",
+        "PropertyFullStreetAddress": "11302 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ROJAS BRUCE/NORMA DANIELA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 191,
+        "APN": "10101214",
+        "PropertyFullStreetAddress": "11290 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "2018-3 IH BORROWER LP"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 192,
+        "APN": "10101216",
+        "PropertyFullStreetAddress": "11282 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LIZARRAGA ANDREW J/MARY C"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 193,
+        "APN": "10101217",
+        "PropertyFullStreetAddress": "11278 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PRATT MICHAEL/WALTER"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 194,
+        "APN": "10101221",
+        "PropertyFullStreetAddress": "11262 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VASQUEZ ARTURO/ALMA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 195,
+        "APN": "10101222",
+        "PropertyFullStreetAddress": "11258 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CASA ZARCO LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 196,
+        "APN": "10106430",
+        "PropertyFullStreetAddress": "9180 W BUCKEYE RD",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "FR AZTX LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 197,
+        "APN": "10225002R",
+        "PropertyFullStreetAddress": null,
+        "PropertyCity": "PHOENIX",
+        "PropertyZipCode": "",
+        "OwnerName": "SALT RIVER PROJECT AGRICULTURAL IMPROVEMENT AND POWER DISTRICT"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 198,
+        "APN": "10101225",
+        "PropertyFullStreetAddress": "11246 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TURNER JIMMY JR"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 199,
+        "APN": "10101226",
+        "PropertyFullStreetAddress": "11242 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FANG YU"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 200,
+        "APN": "10101227",
+        "PropertyFullStreetAddress": "11238 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WILLIAMS EVERETT MARQUIS/BREANNA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 201,
+        "APN": "10101229",
+        "PropertyFullStreetAddress": "11243 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ORQUIZ JOSE A/LAZCANO OSCAR L"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 202,
+        "APN": "10101508",
+        "PropertyFullStreetAddress": "10756 W WOODLAND AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CASTRO ALFONSO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 203,
+        "APN": "10101231",
+        "PropertyFullStreetAddress": "311 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "OLIVAS DANIEL S/PRISCILLA MISIE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 204,
+        "APN": "10101232",
+        "PropertyFullStreetAddress": "315 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WENETA JAMES R/MAUREEN T"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 205,
+        "APN": "10101235",
+        "PropertyFullStreetAddress": "409 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VALADEZ DANIELA G"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 206,
+        "APN": "10101236",
+        "PropertyFullStreetAddress": "413 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RUBIO ROGELIO/IRMA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 207,
+        "APN": "10101238",
+        "PropertyFullStreetAddress": "402 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CARRANZA ARLETH G NAVARRO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 208,
+        "APN": "10101239",
+        "PropertyFullStreetAddress": "11261 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VALLEJO JAVIER G"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 209,
+        "APN": "10101242",
+        "PropertyFullStreetAddress": "11273 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "E C SUTTON REVOCABLE LIVING TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 210,
+        "APN": "10101243",
+        "PropertyFullStreetAddress": "11277 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BADONIE ORLANDO JAMES"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 211,
+        "APN": "10101247",
+        "PropertyFullStreetAddress": "11309 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AH4R PROPERTIES LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 212,
+        "APN": "10101248",
+        "PropertyFullStreetAddress": "11313 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "IH6 PROPERTY PHOENIX L P"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 213,
+        "APN": "10101250",
+        "PropertyFullStreetAddress": "11321 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SALAZAR L STARR RAEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 214,
+        "APN": "10101252",
+        "PropertyFullStreetAddress": "11329 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ANJORIE DIANA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 215,
+        "APN": "10109007",
+        "PropertyFullStreetAddress": "9356 W ADAMS ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "PAREDEZ PETER P/MARIA D"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 216,
+        "APN": "10101253",
+        "PropertyFullStreetAddress": "11333 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TRUE NORTH PROPERTY OWNER C LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 217,
+        "APN": "10107036",
+        "PropertyFullStreetAddress": "110 S 92ND AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "SUAREZ MARIA M"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 218,
+        "APN": "10101255",
+        "PropertyFullStreetAddress": "11341 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "AMH 2014-1 BORROWER LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 219,
+        "APN": "10101256",
+        "PropertyFullStreetAddress": "401 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "QUIJADA DANIEL A/DE MONZON SONIA QUIJADA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 220,
+        "APN": "10101260",
+        "PropertyFullStreetAddress": "417 S 113TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "JAMES PEYTON"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 221,
+        "APN": "10101261",
+        "PropertyFullStreetAddress": "418 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "JOETTE JOLENE LEHER TRUST"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 222,
+        "APN": "10101262",
+        "PropertyFullStreetAddress": "414 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CARDOZO LUIS/GARRIDO LYNDDY"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 223,
+        "APN": "10109008",
+        "PropertyFullStreetAddress": "9353 W MONROE ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "AYALA JUANA/JUAN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 224,
+        "APN": "10101265",
+        "PropertyFullStreetAddress": "402 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WILTZ DARROLL/REYES-WILTZ GEORGETTE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 225,
+        "APN": "10101267",
+        "PropertyFullStreetAddress": "405 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "VELASQUEZ RAMIRO"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 226,
+        "APN": "10101270",
+        "PropertyFullStreetAddress": "417 S 113TH AVE",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BURT JOSHUA BRYAN/MISTY MARIE"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 227,
+        "APN": "10101272",
+        "PropertyFullStreetAddress": "11266 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "FLORES JORGE C/GALVEZ MARIA E"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 228,
+        "APN": "10101273",
+        "PropertyFullStreetAddress": "11262 W LINCOLN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "REGALADO PAULA/FIMBRES RACHEL"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 229,
+        "APN": "10101280",
+        "PropertyFullStreetAddress": "417 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "MORFIN FRANCISCO/GENOVEVA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 230,
+        "APN": "10101281",
+        "PropertyFullStreetAddress": "421 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "LEVERETTE LISA A"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 231,
+        "APN": "10101284",
+        "PropertyFullStreetAddress": "433 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "433 S 112TH DR LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 232,
+        "APN": "10101286",
+        "PropertyFullStreetAddress": "501 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "PROGRESS RESIDENTIAL BORROWER 14 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 233,
+        "APN": "10101287",
+        "PropertyFullStreetAddress": "505 S 112TH DR",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "TREVIZO RAMON OBED/LUGO DINA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 234,
+        "APN": "10101153",
+        "PropertyFullStreetAddress": "11394 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "GARCIA LUIS"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 235,
+        "APN": "10109006",
+        "PropertyFullStreetAddress": "9355 W MONROE ST",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "HERNANDEZ MARIA T"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 236,
+        "APN": "10101154",
+        "PropertyFullStreetAddress": "11390 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BARRAGAN DANIELLE L"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 237,
+        "APN": "10114161",
+        "PropertyFullStreetAddress": "10215 W HILTON AVE",
+        "PropertyCity": "TOLLESON",
+        "PropertyZipCode": "85353",
+        "OwnerName": "PR BORROWER 27 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 238,
+        "APN": "10101157",
+        "PropertyFullStreetAddress": "11378 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WESTOVER CODY/WARREN KAYLA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 239,
+        "APN": "10101159",
+        "PropertyFullStreetAddress": "11370 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "RAEDER JOHN R III/JESSICA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 240,
+        "APN": "10101161",
+        "PropertyFullStreetAddress": "11362 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "CONTRERAS DAVID/HERNANDEZ YEVON"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 241,
+        "APN": "10225002Q",
+        "PropertyFullStreetAddress": null,
+        "PropertyCity": "PHOENIX",
+        "PropertyZipCode": "",
+        "OwnerName": "SALT RIVER PROJECT AGRICULTURAL IMPROVEMENT AND POWER DISTRICT"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 242,
+        "APN": "10101165",
+        "PropertyFullStreetAddress": "11346 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "DOUGHERTY DENNIS P/KATHLEEN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 243,
+        "APN": "10101166",
+        "PropertyFullStreetAddress": "11342 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SAID KHADIJA/SHEIKH ABAALI"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 244,
+        "APN": "10101168",
+        "PropertyFullStreetAddress": "11334 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "SAJO SAMUEL A"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 245,
+        "APN": "10101169",
+        "PropertyFullStreetAddress": "11330 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "WEST VALLEY RENTALS 1 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 246,
+        "APN": "10101171",
+        "PropertyFullStreetAddress": "11322 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "UPROPE12 LLC"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 247,
+        "APN": "10101173",
+        "PropertyFullStreetAddress": "11314 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "UDAVE MICHAEL/BOTELLO MAGDALENA"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 248,
+        "APN": "10101178",
+        "PropertyFullStreetAddress": "11280 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "NJOROGE JOHN W/NGANGA PENNINAH"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 249,
+        "APN": "10101183",
+        "PropertyFullStreetAddress": "11260 W BUCHANAN ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "ARELLANO ALFREDO/M CARMEN"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 250,
+        "APN": "10101186",
+        "PropertyFullStreetAddress": "11259 W HARRISON ST",
+        "PropertyCity": "AVONDALE",
+        "PropertyZipCode": "85323",
+        "OwnerName": "BLUNDELL ANDREA/ROBERT"
+      }
+    }
+  ],
+  "exceededTransferLimit": true
+}

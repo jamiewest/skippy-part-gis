@@ -75,12 +75,12 @@ OwnerCandidate? selectOwnerCandidate(
   if (unique.length == 1) {
     return unique.single;
   }
-  final apn = digitsOnly(preferredApn);
+  final apn = normalizeApn(preferredApn);
   if (apn.isEmpty) {
     return null;
   }
   final apnMatches = unique
-      .where((candidate) => digitsOnly(candidate.parcelId) == apn)
+      .where((candidate) => normalizeApn(candidate.parcelId) == apn)
       .toList(growable: false);
   return apnMatches.length == 1 ? apnMatches.single : null;
 }
